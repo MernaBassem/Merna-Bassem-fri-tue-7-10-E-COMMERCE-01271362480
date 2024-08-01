@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 import { ErrorClass } from "../utils/error-class.utils.js";
 
-import User from "../../DB/Models/user.model.js";
+// import User from "../../DB/Models/user.model.js";
 
 /**
  * @returns {function} return middleware function
@@ -34,12 +34,12 @@ export const authenticate = () => {
       );
     }
     // find user by userId
-    const isUserExists = await User.findById(data?.userId);
-    if (!isUserExists) {
-      return next(new ErrorClass("User not found", 404, "User not found"));
-    }
-    // add the user data in req object
-    req.authUser = isUserExists;
+    // const isUserExists = await User.findById(data?.userId);
+    // if (!isUserExists) {
+    //   return next(new ErrorClass("User not found", 404, "User not found"));
+    // }
+    // // add the user data in req object
+    // req.authUser = isUserExists;
     next();
   };
 };

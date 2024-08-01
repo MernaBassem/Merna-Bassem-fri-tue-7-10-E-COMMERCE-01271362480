@@ -1,6 +1,8 @@
 import express from "express";
 import { config } from "dotenv";
 import {connection_db} from "./DB/connection.js";
+import * as router from "./src/Modules/index.js";
+import { globaleResponse } from "./src/Middlewares/index.js";
 
 config();
 
@@ -8,6 +10,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
+app.use(globaleResponse);
 
 
 connection_db();
