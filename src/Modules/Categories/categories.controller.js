@@ -54,3 +54,16 @@ export const createCategory = async (req, res, next) => {
     data: category,
   });
 };
+
+//----------------------------------
+
+/**
+ * 
+ * @api {GET} /categories  get all categories
+ * @returns get all categories
+ */
+
+export const getAllCategory = async(req,res,next)=>{
+  const getAllCategory = await Category.find()
+  return res.status(200).json({count:getAllCategory.length,categories:getAllCategory})
+}

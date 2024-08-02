@@ -17,6 +17,7 @@ const { errorHandler, getDocumentByName, multerHost ,validationMiddleware} = mid
 const categoryRouter = Router();
 
 // routes
+// create category
 categoryRouter.post(
   "/createCategory",
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
@@ -24,5 +25,6 @@ categoryRouter.post(
   getDocumentByName(Category),
   errorHandler(controller.createCategory)
 );
-
+// get All category
+categoryRouter.get("/getAllCategory", errorHandler(controller.getAllCategory));
 export { categoryRouter };

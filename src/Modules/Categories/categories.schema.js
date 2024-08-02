@@ -12,10 +12,10 @@ export const createCategorySchema = {
       "string.base": "Category Name must be a string",
     }),
     // image file validation export file extention image extention
-   image: Joi.string().valid(...extensions.Images).required().messages({
-    "any.required": "Image is required",
-    "any.only": "Invalid image type",
-  })
+  //  image: Joi.file().valid(...extensions.Images).required().messages({
+  //   "any.required": "Image is required",
+  //   "any.only": "Invalid image type",
+  // })
 
   }),
 };
