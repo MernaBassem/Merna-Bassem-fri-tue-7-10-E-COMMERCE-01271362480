@@ -4,7 +4,7 @@ import path from "path";
 import { DateTime } from "luxon";
 import { nanoid } from "nanoid";
 
-import { extensions } from "../Utils/index.js";
+import { extensions ,ErrorClass} from "../utils/index.js";
 
 export const multerMiddleware = ({
   filePath = "general",
