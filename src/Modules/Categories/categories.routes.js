@@ -8,7 +8,10 @@ import { extensions } from "../../utils/index.js";
 import * as middlewares from "../../Middlewares/index.js";
 // models
 import { Category } from "../../../DB/Models/index.js";
-import { createCategorySchema } from "./categories.schema.js";
+import {
+  createCategorySchema,
+  getCategorySchema,
+} from "./categories.schema.js";
 
 // get the required middlewares
 const { errorHandler, getDocumentByName, multerHost ,validationMiddleware} = middlewares;
@@ -27,4 +30,7 @@ categoryRouter.post(
 );
 // get All category
 categoryRouter.get("/getAllCategory", errorHandler(controller.getAllCategory));
+// get category
+categoryRouter.get("/getCategory",validationMiddleware(getCategorySchema), errorHandler(controller.getCategory));
+
 export { categoryRouter };

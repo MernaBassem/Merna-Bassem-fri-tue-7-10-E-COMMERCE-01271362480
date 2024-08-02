@@ -67,3 +67,40 @@ export const getAllCategory = async(req,res,next)=>{
   const getAllCategory = await Category.find()
   return res.status(200).json({count:getAllCategory.length,categories:getAllCategory})
 }
+
+//----------------------------------
+
+/**
+ * @api {GET} /categories Get category by name or id or slug
+ */
+
+export const getCategory = async(req,res,next)=>{
+  // destruct data from query
+  const { id, name, slug } = req.query;
+  const filterQuery = {};
+
+  // check if the query params are present
+  if (id) {
+    filterQuery._id = id;
+  }
+  if (name) {
+    filterQuery.name = name;
+  }
+  if (slug) {
+    filterQuery.slug = slug;
+  }
+
+  const category = await Category.findOne(filterQuery);
+
+  // find the category
+  if (!category) {
+    return next(
+      new ErrorClass("Category not found", 404, "Category not found")
+    );
+  }
+
+  res.status(200).json({
+    message: "Category found",
+    data: category,
+  });
+}

@@ -1,7 +1,7 @@
 // category validation api
 import Joi from "joi";
 // utils 
-import { extensions } from "../../utils/index.js";
+import { extensions ,objectIdValidation } from "../../utils/index.js";
 // add job
 
 export const createCategorySchema = {
@@ -19,3 +19,28 @@ export const createCategorySchema = {
 
   }),
 };
+
+// get category name or slug or id 
+
+export const getCategorySchema = {
+  query: Joi.object({
+    name:Joi.string().messages({
+      "string.base":"Category Name must be a string"
+    }),
+    id: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation")
+      .required()
+      .messages({
+        "any.required": "Category ID is required",
+        "string.base": "Category ID must be a string",
+        "string.pattern": "Category ID must be a valid ObjectId",
+      }),
+      slug:Joi.string().messages({
+      "string.base":"Category Name must be a string"
+    }),
+  }).min(1)
+    .messages({
+      "object.min":
+        "At least one field is required send in query parameters sush as workingTime,jobLocation,seniorityLevel,jobTitle,technicalSkills,softSkills",
+    }),
+}
