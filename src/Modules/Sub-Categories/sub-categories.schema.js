@@ -1,7 +1,7 @@
 
 import Joi from "joi";
 
-// create category schema 
+// create Subcategory schema 
 
 export const createSubCategorySchema = {
     body: Joi.object({
@@ -18,3 +18,17 @@ export const createSubCategorySchema = {
         }),
     }),
 }
+// get all subcategory schema
+
+export const getAllSubCategorySchema = {
+   // check page and limit number
+    query: Joi.object({
+        page: Joi.number().messages({
+            "number.base": "Page must be a number",
+        }),
+        limit: Joi.number().messages({
+            "number.base": "Limit must be a number",
+        }),
+    }),
+}
+

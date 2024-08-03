@@ -79,3 +79,16 @@ export const deleteCategorySchema = {
       }),
   }),
 }
+
+// get all categorys schema
+export const getAllCategorySchema = {
+  // check page and limit number 
+  query: Joi.object({
+    page: Joi.number().messages({
+      "number.base": "Page must be a number",
+    }),
+    limit: Joi.number().messages({
+      "number.base": "Limit must be a number",
+    }),
+  }),
+}

@@ -9,7 +9,7 @@ import { extensions } from "../../utils/index.js";
 import * as middlewares from "../../Middlewares/index.js";
 // models
 import { SubCategory } from "../../../DB/Models/index.js";
-import { createSubCategorySchema } from "./sub-categories.schema.js";
+import { createSubCategorySchema, getAllSubCategorySchema } from "./sub-categories.schema.js";
 
 
 // get the required middlewares
@@ -28,7 +28,10 @@ SubCategoryRouter.post(
   getDocumentByName(SubCategory),
   errorHandler(controller.createSubCategory)
 );
-
+// get All subCategory
+SubCategoryRouter.get("/getAllSubCategory",
+  validationMiddleware(getAllSubCategorySchema)
+  , errorHandler(controller.getAllSubCategory));
 
 export { SubCategoryRouter };
 

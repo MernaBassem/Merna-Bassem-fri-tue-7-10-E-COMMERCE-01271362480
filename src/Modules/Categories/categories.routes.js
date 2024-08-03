@@ -5,6 +5,7 @@ import * as controller from "./categories.controller.js";
 import {
   createCategorySchema,
   deleteCategorySchema,
+  getAllCategorySchema,
   getCategorySchema,
   updateCategorySchema,
 } from "./categories.schema.js";
@@ -32,7 +33,9 @@ categoryRouter.post(
   errorHandler(controller.createCategory)
 );
 // get All category
-categoryRouter.get("/getAllCategory", errorHandler(controller.getAllCategory));
+categoryRouter.get("/getAllCategory",
+  validationMiddleware(getAllCategorySchema),
+  errorHandler(controller.getAllCategory));
 // get category
 categoryRouter.get(
   "/getCategory",
