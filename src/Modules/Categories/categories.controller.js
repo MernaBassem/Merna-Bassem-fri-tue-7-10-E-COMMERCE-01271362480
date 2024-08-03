@@ -87,15 +87,11 @@ export const getCategory = async (req, res, next) => {
   const filterQuery = {};
 
   // check if the query params are present
-  if (id) {
-    filterQuery._id = id;
-  }
-  if (name) {
-    filterQuery.name = name;
-  }
-  if (slug) {
-    filterQuery.slug = slug;
-  }
+  if (id) filterQuery._id = id;
+
+  if (name) filterQuery.name = name;
+
+  if (slug) filterQuery.slug = slug;
 
   const category = await Category.findOne(filterQuery);
 
@@ -105,7 +101,7 @@ export const getCategory = async (req, res, next) => {
       new ErrorClass("Category not found", 404, "Category not found")
     );
   }
-
+  // return response
   res.status(200).json({
     message: "Category found",
     data: category,
@@ -190,7 +186,7 @@ export const deleteCategory = async (req, res, next) => {
   await cloudinaryConfig().api.delete_resources_by_prefix(categoryPath);
   await cloudinaryConfig().api.delete_folder(categoryPath);
 
-  // delete sub categories 
+  // delete sub categories
   await SubCategory.deleteMany({ categoryId: category._id });
   /**
    * @todo  delete the related  , brand ,  products from db

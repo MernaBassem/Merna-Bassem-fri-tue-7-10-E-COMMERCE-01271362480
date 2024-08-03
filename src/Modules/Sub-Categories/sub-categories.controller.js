@@ -85,3 +85,29 @@ export const getAllSubCategory = async (req, res, next) => {
     subCategories,
   });
 };
+
+//--------------------------------
+/**
+ * @{get} /subCategories/getSubCategory By id or slug or name
+ * @query id or slug or name
+ * @return get sub-category by id or slug or name
+ */
+
+export const getSubCategory = async (req, res, next) => {
+  const { id, name, slug } = req.query;
+  const filterQuery = {};
+  // check if the query params are present
+
+  if (id) filterQuery._id = id;
+  if (name) filterQuery.name = name;
+  if (slug) filterQuery.slug = slug;
+
+  const subCategory = await SubCategory.findOne(filterQuery);
+  // check sub-category exists
+  if (!subCategory)
+    return next(
+      new ErrorClass("Sub-Category not found", 404, "Sub-Category not found")
+    );
+    // send the response
+  return res.status(200).json({ subCategory });
+};

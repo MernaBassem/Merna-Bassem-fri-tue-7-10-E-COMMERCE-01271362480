@@ -1,5 +1,6 @@
 
 import Joi from "joi";
+import { extensions ,objectIdValidation } from "../../utils/index.js";
 
 // create Subcategory schema 
 
@@ -31,4 +32,24 @@ export const getAllSubCategorySchema = {
         }),
     }),
 }
+// get subcategory by id or name or slug
 
+export const getSubCategorySchema = {
+  query: Joi.object({
+    name: Joi.string().messages({
+      "string.base": "Category Name must be a string"
+    }),
+    id: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation")
+      .messages({
+        "string.base": "Category ID must be a string",
+        "string.pattern": "Category ID must be a valid ObjectId",
+      }),
+    slug: Joi.string().messages({
+      "string.base": "Category Slug must be a string"
+    }),
+  }).min(1)
+    .messages({
+      "object.min": "At least one field is required in query parameters such as name, id, or slug",
+    }),
+}
