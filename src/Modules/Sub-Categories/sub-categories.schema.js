@@ -77,3 +77,15 @@ export const updateSubCategorySchema = {
       "object.min": "At least one field is required in body such as name or image(send image and public_id_new)",
     }),
 }
+// delete subCategory schema
+export const deleteSubCategorySchema = {
+  params: Joi.object({
+    id: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation").required()
+      .messages({
+        "any.required": "Category ID is required",
+        "string.base": "Category ID must be a string",
+        "string.pattern": "Category ID must be a valid ObjectId",
+      }),
+  }),
+}

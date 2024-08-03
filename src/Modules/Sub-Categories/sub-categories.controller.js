@@ -163,3 +163,36 @@ export const updateSubCategory = async (req, res, next) => {
 };
 
 
+//--------------------------------
+/**
+ * @api {delete} /subCategories/deleteSubCategory/:id delete sub-category
+ * @return delete sub-category
+ *
+ */
+
+export const deleteSubCategory = async (req, res, next) => {
+  // destruct id from params
+  const { id } = req.params;
+  // check if sub-category exists
+  const subCategory = await SubCategory.findByIdAndDelete(id).populate("categoryId");
+  // if sub-category not found
+  if (!subCategory)
+    return next(
+      new ErrorClass("Sub-Category not found", 404, "Sub-Category not found")
+    );
+
+  // delete the image from cloudinary
+  const subCategoryPath = `${process.env.UPLOADS_FOLDER}/Categories/${subCategory.categoryId.customId}/SubCategories/${subCategory.customId}`;
+  await cloudinaryConfig().api.delete_resources_by_prefix(subCategoryPath);
+  await cloudinaryConfig().api.delete_folder(subCategoryPath);
+
+   /**
+   * @todo  delete the related  , brand ,  products from db
+   */
+
+  // send the response
+  res.status(200).json({
+    message: "Sub-Category deleted successfully",
+    subCategory,
+  });
+};
