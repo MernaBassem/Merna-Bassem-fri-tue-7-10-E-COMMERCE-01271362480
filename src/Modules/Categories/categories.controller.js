@@ -4,7 +4,7 @@ import { cloudinaryConfig, uploadFile, ErrorClass } from "../../utils/index.js";
 import { Category } from "../../../DB/Models/index.js";
 
 /**
- * @api {POST} /categories/create  create a  new category
+ * @api {POST} /categories/createCategory  create a  new category
  * @body name , image
  * @return create category
  */
@@ -59,7 +59,7 @@ export const createCategory = async (req, res, next) => {
 
 /**
  * 
- * @api {GET} /categories  get all categories
+ * @api {GET} /categories/getAllCategory  get all categories
  * @returns get all categories
  */
 
@@ -71,7 +71,7 @@ export const getAllCategory = async(req,res,next)=>{
 //----------------------------------
 
 /**
- * @api {GET} /categories Get category by name or id or slug
+ * @api {GET} /categories/getCategory Get category by name or id or slug
  */
 
 export const getCategory = async(req,res,next)=>{
@@ -101,6 +101,61 @@ export const getCategory = async(req,res,next)=>{
 
   res.status(200).json({
     message: "Category found",
+    data: category,
+  });
+}
+
+//----------------------------------
+
+/**
+ * @api {put} /categories/upadateCategory/:id update category
+ * @body name , image
+ * @return update category
+ */
+
+export const updateCategory = async (req, res, next) => {
+  // get the category id
+  const { id } = req.params;
+  // find the category by id
+  const category = await Category.findById(id);
+  // check if the category exists
+  if (!category) {
+    return next(
+      new ErrorClass("Category not found", 404, "Category not found")
+    );
+  }
+
+  // name of the category and public_id_new
+  const { name ,public_id_new} = req.body;
+  // if send name change slug
+  if (name) {
+    category.name = name;
+    category.slug = slugify(name, {
+      replacement: "_",
+      lower: true,
+    });
+  }
+  
+  // image
+  if(req.file){
+    // split the public_id
+    const splitedPublicId = public_id_new.split(`${category.customId}/`)[1];
+
+    // upload the new image
+    const { secure_url } = await uploadFile({
+      file: req.file.path,
+      folder: `${process.env.UPLOADS_FOLDER}/Categories/${category.customId}`,
+      publicId: splitedPublicId,
+    });
+    // update the image
+    category.Images.secure_url = secure_url;
+  }
+
+  // save the category
+  await category.save();
+  // return the response
+  res.status(200).json({
+    message: "Category updated successfully",
     data: category,
   });
 }
