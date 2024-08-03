@@ -2,6 +2,7 @@ import slugify from "slugify";
 import { nanoid } from "nanoid";
 import { cloudinaryConfig, uploadFile, ErrorClass } from "../../utils/index.js";
 import { Category } from "../../../DB/Models/index.js";
+import { connections } from "mongoose";
 
 /**
  * @api {POST} /categories/createCategory  create a  new category
@@ -59,12 +60,18 @@ export const createCategory = async (req, res, next) => {
 
 /**
  * 
- * @api {GET} /categories/getAllCategory  get all categories
+ * @api {GET} /categories/getAllCategory  get all categories with pagination
  * @returns get all categories
  */
 
 export const getAllCategory = async(req,res,next)=>{
-  const getAllCategory = await Category.find()
+  const { page = 1, limit = 2 } = req.query;
+  const skip = (page - 1) * limit;
+  console.log("page",page,"limit",limit,"skip",skip)
+  const getAllCategory = await Category.paginate({}, {page,limit,skip})
+  /**
+   * @todo subcatgories populate after creating 
+   */
   return res.status(200).json({count:getAllCategory.length,categories:getAllCategory})
 }
 
@@ -181,10 +188,10 @@ export const deleteCategory = async (req, res, next) => {
   // delete the image from cloudinary
  
   const categoryPath = `${process.env.UPLOADS_FOLDER}/Categories/${category?.customId}`;
- console.log(categoryPath)
   await cloudinaryConfig().api.delete_resources_by_prefix(categoryPath);
   await cloudinaryConfig().api.delete_folder(categoryPath);
-  // 
+  
+
   /**
      * @todo  delete the related subCategory , brand ,  products from db
   */
@@ -195,3 +202,5 @@ export const deleteCategory = async (req, res, next) => {
     data: category,
   });
 }
+
+//----------------------------------

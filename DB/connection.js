@@ -1,6 +1,6 @@
 
 
-import mongoose from "mongoose";
+import mongoose from "./global-setup.js";
 
 // connection db use mongoose
 export const connection_db = async () => {
