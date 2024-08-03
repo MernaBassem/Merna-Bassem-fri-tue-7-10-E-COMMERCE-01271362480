@@ -1,18 +1,20 @@
 import { Router } from "express";
 // controllers
 import * as controller from "./categories.controller.js";
-// utils
-import { extensions } from "../../utils/index.js";
-// middlewares
-import * as middlewares from "../../Middlewares/index.js";
-// models
-import { Category } from "../../../DB/Models/index.js";
+// schema 
 import {
   createCategorySchema,
   deleteCategorySchema,
   getCategorySchema,
   updateCategorySchema,
 } from "./categories.schema.js";
+
+// utils
+import { extensions } from "../../utils/index.js";
+// middlewares
+import * as middlewares from "../../Middlewares/index.js";
+// models
+import { Category } from "../../../DB/Models/index.js";
 
 // get the required middlewares
 const { errorHandler, getDocumentByName, multerHost, validationMiddleware } =

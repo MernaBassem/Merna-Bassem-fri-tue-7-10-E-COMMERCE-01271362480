@@ -10,8 +10,10 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(express.json());
+// categories routes
 app.use("/categories", router.categoryRouter);
-
+// sub categories routes
+app.use("/subCategories", router.SubCategoryRouter);
 app.use(globaleResponse);
 
 
