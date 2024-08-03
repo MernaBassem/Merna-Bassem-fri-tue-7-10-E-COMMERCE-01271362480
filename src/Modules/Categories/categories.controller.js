@@ -67,7 +67,6 @@ export const createCategory = async (req, res, next) => {
 export const getAllCategory = async (req, res, next) => {
   const { page = 1, limit = 2 } = req.query;
   const skip = (page - 1) * limit;
-  console.log("page", page, "limit", limit, "skip", skip);
   const getAllCategory = await Category.paginate(
     {},
     { page, limit, skip, populate: "subCategories" }
