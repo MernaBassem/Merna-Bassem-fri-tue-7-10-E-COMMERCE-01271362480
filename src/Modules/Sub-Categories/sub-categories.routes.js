@@ -9,7 +9,7 @@ import { extensions } from "../../utils/index.js";
 import * as middlewares from "../../Middlewares/index.js";
 // models
 import { SubCategory } from "../../../DB/Models/index.js";
-import { createSubCategorySchema, getAllSubCategorySchema, getSubCategorySchema } from "./sub-categories.schema.js";
+import { createSubCategorySchema, getAllSubCategorySchema, getSubCategorySchema, updateSubCategorySchema } from "./sub-categories.schema.js";
 
 
 // get the required middlewares
@@ -38,6 +38,14 @@ SubCategoryRouter.get(
   "/getSubCategory",
   validationMiddleware(getSubCategorySchema),
   errorHandler(controller.getSubCategory)
+)
+// update subCategory
+SubCategoryRouter.put(
+  "/updateSubCategory/:id",
+  multerHost({ allowedExtensions: extensions.Images }).single("image"),
+  validationMiddleware(updateSubCategorySchema),
+  getDocumentByName(SubCategory),
+  errorHandler(controller.updateSubCategory)
 )
 export { SubCategoryRouter };
 

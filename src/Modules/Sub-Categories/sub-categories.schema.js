@@ -53,3 +53,27 @@ export const getSubCategorySchema = {
       "object.min": "At least one field is required in query parameters such as name, id, or slug",
     }),
 }
+// update subCategory schema
+
+export const updateSubCategorySchema = {
+  params: Joi.object({
+    id: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation").required()
+      .messages({
+        "any.required": "Category ID is required",
+        "string.base": "Category ID must be a string",
+        "string.pattern": "Category ID must be a valid ObjectId",
+      }),
+  }),
+  body: Joi.object({
+    public_id_new: Joi.string().messages({
+      "string.base": "Category Image must be a string",
+    }),
+     name: Joi.string().min(3).messages({
+      "string.min": "Category Name should have a minimum length of 3 characters",
+    })
+  }).min(1)
+    .messages({
+      "object.min": "At least one field is required in body such as name or image(send image and public_id_new)",
+    }),
+}

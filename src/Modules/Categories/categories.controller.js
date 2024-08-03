@@ -159,7 +159,7 @@ export const updateCategory = async (req, res, next) => {
   // return the response
   res.status(200).json({
     message: "Category updated successfully",
-    data: category,
+     category,
   });
 };
 //----------------------------------

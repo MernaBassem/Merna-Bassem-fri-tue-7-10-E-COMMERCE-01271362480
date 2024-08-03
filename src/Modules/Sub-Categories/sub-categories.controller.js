@@ -6,7 +6,7 @@ import { ErrorClass, cloudinaryConfig, uploadFile } from "../../utils/index.js";
 import { Category, SubCategory } from "../../../DB/Models/index.js";
 
 /**
- * @post /subCategories/createSubCategory
+ * @api {post} /subCategories/createSubCategory
  * @body name , image
  * @query categoryId
  * @return create sub-category
@@ -71,7 +71,7 @@ export const createSubCategory = async (req, res, next) => {
 //--------------------------------
 
 /**
- * @{get} /subCategories/getAllSubCategory with pagination
+ * @api {get} /subCategories/getAllSubCategory with pagination
  * @return get all sub-categories
  *
  */
@@ -88,7 +88,7 @@ export const getAllSubCategory = async (req, res, next) => {
 
 //--------------------------------
 /**
- * @{get} /subCategories/getSubCategory By id or slug or name
+ * @api {get} /subCategories/getSubCategory By id or slug or name
  * @query id or slug or name
  * @return get sub-category by id or slug or name
  */
@@ -111,3 +111,55 @@ export const getSubCategory = async (req, res, next) => {
     // send the response
   return res.status(200).json({ subCategory });
 };
+//--------------------------------------
+/**
+ * @api {put} /subCategories/updateSubCategory/:id update sub-category
+ * @body name or image 
+ * @return update sub-category
+ * 
+ */
+export const updateSubCategory = async (req, res, next) => {
+  // destruct id from params
+  const { id } = req.params;
+  // check if sub-category exists
+  const subCategory = await SubCategory.findById(id).populate("categoryId");
+  if (!subCategory)
+    return next(
+      new ErrorClass("Sub-Category not found", 404, "Sub-Category not found")
+    );
+    // destruct name and public_id_new from body
+  const { name, public_id_new } = req.body;
+  // if change name change slug
+  if (name) {
+    subCategory.name = name;
+    subCategory.slug = slugify(name, {
+      replacement: "_",
+      lower: true,
+    });
+  }
+  //image 
+  if (req.file){
+    //split the public_id
+    const splitedPublicId =public_id_new.split(`${subCategory.customId}/`)[1];
+    console.log("subCategory.customId", subCategory.customId); 
+    console.log("splitedPublicId", splitedPublicId);
+    console.log("subcategory",subCategory)
+    // upload the new image
+    const { secure_url } = await uploadFile({
+      file: req.file.path,
+      folder: `${process.env.UPLOADS_FOLDER}/Categories/${subCategory.categoryId.customId}/SubCategories/${subCategory.customId}`,
+      publicId: splitedPublicId,
+    });
+    // update the image
+    subCategory.Images.secure_url = secure_url;
+  }
+  // save the sub-category
+  await subCategory.save();
+  // send the response
+  res.status(200).json({
+    message: "Sub-Category updated successfully",
+    subCategory,
+  });
+};
+
+
