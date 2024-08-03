@@ -159,3 +159,39 @@ export const updateCategory = async (req, res, next) => {
     data: category,
   });
 }
+//----------------------------------
+/**
+ * @api {delete} /categories/deleteCategory/:id delete category
+ * @return delete category
+ */
+
+
+export const deleteCategory = async (req, res, next) => {
+  // get the category id
+  const { id } = req.params;
+  // find and delete  the category by id
+  const category = await Category.findByIdAndDelete(id);
+  // check if the category exists
+  if (!category) {
+    return next(
+      new ErrorClass("Category not found", 404, "Category not found")
+    );
+  }
+
+  // delete the image from cloudinary
+ 
+  const categoryPath = `${process.env.UPLOADS_FOLDER}/Categories/${category?.customId}`;
+ console.log(categoryPath)
+  await cloudinaryConfig().api.delete_resources_by_prefix(categoryPath);
+  await cloudinaryConfig().api.delete_folder(categoryPath);
+  // 
+  /**
+     * @todo  delete the related subCategory , brand ,  products from db
+  */
+
+  // return the response
+  res.status(200).json({
+    message: "Category deleted successfully",
+    data: category,
+  });
+}

@@ -9,6 +9,7 @@ import * as middlewares from "../../Middlewares/index.js";
 import { Category } from "../../../DB/Models/index.js";
 import {
   createCategorySchema,
+  deleteCategorySchema,
   getCategorySchema,
   updateCategorySchema,
 } from "./categories.schema.js";
@@ -41,6 +42,13 @@ categoryRouter.put(
   "/updateCategory/:id",
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
   validationMiddleware(updateCategorySchema),
+  getDocumentByName(Category),
   errorHandler(controller.updateCategory)
+);
+//delete category
+categoryRouter.delete(
+  "/deleteCategory/:id",
+  validationMiddleware(deleteCategorySchema),
+  errorHandler(controller.deleteCategory)
 );
 export { categoryRouter };
