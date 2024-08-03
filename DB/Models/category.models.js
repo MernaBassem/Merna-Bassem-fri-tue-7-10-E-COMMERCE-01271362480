@@ -42,6 +42,16 @@ const categorySchema = new Schema({
 { timestamps: true }
 )
 
+// Virtual field to populate jobs
+categorySchema.virtual("subCategories", {
+  ref: "SubCategory",
+  localField: "_id",
+  foreignField: "categoryId",
+});
+
+// Ensure virtual fields are included in the output
+categorySchema.set("toJSON", { virtuals: true });
+
 
 export const Category =
   mongoose.models.Category || model("Category", categorySchema);

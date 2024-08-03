@@ -59,21 +59,23 @@ export const createCategory = async (req, res, next) => {
 //----------------------------------
 
 /**
- * 
+ *
  * @api {GET} /categories/getAllCategory  get all categories with pagination
  * @returns get all categories
  */
 
-export const getAllCategory = async(req,res,next)=>{
+export const getAllCategory = async (req, res, next) => {
   const { page = 1, limit = 2 } = req.query;
   const skip = (page - 1) * limit;
-  console.log("page",page,"limit",limit,"skip",skip)
-  const getAllCategory = await Category.paginate({}, {page,limit,skip})
-  /**
-   * @todo subcatgories populate after creating 
-   */
-  return res.status(200).json({count:getAllCategory.length,categories:getAllCategory})
-}
+  console.log("page", page, "limit", limit, "skip", skip);
+  const getAllCategory = await Category.paginate(
+    {},
+    { page, limit, skip, populate: "subCategories" }
+  );
+  return res
+    .status(200)
+    .json({ count: getAllCategory.length, categories: getAllCategory });
+};
 
 //----------------------------------
 
@@ -81,7 +83,7 @@ export const getAllCategory = async(req,res,next)=>{
  * @api {GET} /categories/getCategory Get category by name or id or slug
  */
 
-export const getCategory = async(req,res,next)=>{
+export const getCategory = async (req, res, next) => {
   // destruct data from query
   const { id, name, slug } = req.query;
   const filterQuery = {};
@@ -110,7 +112,7 @@ export const getCategory = async(req,res,next)=>{
     message: "Category found",
     data: category,
   });
-}
+};
 
 //----------------------------------
 
@@ -133,7 +135,7 @@ export const updateCategory = async (req, res, next) => {
   }
 
   // name of the category and public_id_new
-  const { name ,public_id_new} = req.body;
+  const { name, public_id_new } = req.body;
   // if send name change slug
   if (name) {
     category.name = name;
@@ -142,9 +144,9 @@ export const updateCategory = async (req, res, next) => {
       lower: true,
     });
   }
-  
+
   // image
-  if(req.file){
+  if (req.file) {
     // split the public_id
     const splitedPublicId = public_id_new.split(`${category.customId}/`)[1];
 
@@ -165,13 +167,12 @@ export const updateCategory = async (req, res, next) => {
     message: "Category updated successfully",
     data: category,
   });
-}
+};
 //----------------------------------
 /**
  * @api {delete} /categories/deleteCategory/:id delete category
  * @return delete category
  */
-
 
 export const deleteCategory = async (req, res, next) => {
   // get the category id
@@ -186,21 +187,20 @@ export const deleteCategory = async (req, res, next) => {
   }
 
   // delete the image from cloudinary
- 
+
   const categoryPath = `${process.env.UPLOADS_FOLDER}/Categories/${category?.customId}`;
   await cloudinaryConfig().api.delete_resources_by_prefix(categoryPath);
   await cloudinaryConfig().api.delete_folder(categoryPath);
-  
 
   /**
-     * @todo  delete the related subCategory , brand ,  products from db
-  */
+   * @todo  delete the related subCategory , brand ,  products from db
+   */
 
   // return the response
   res.status(200).json({
     message: "Category deleted successfully",
     data: category,
   });
-}
+};
 
 //----------------------------------
