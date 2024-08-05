@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const brandSchema = new Schema({
@@ -45,6 +45,6 @@ const brandSchema = new Schema({
 }, { timestamps: true });
 
 // Add index on 'name' and 'subCategoryId'
-brandSchema.index({ name: 1, subCategoryId: 1 });
+brandSchema.index({ name: 1, subCategoryId: 1 }, { unique: true });
 
 export const Brand = mongoose.models.Brand || model("Brand", brandSchema);

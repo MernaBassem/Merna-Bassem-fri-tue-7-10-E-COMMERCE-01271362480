@@ -2,7 +2,7 @@
 import Joi from "joi";
 // utils 
 import { extensions ,objectIdValidation } from "../../utils/index.js";
-// add job
+// add category
 
 export const createCategorySchema = {
   body: Joi.object({

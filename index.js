@@ -14,6 +14,8 @@ app.use(express.json());
 app.use("/categories", router.categoryRouter);
 // sub categories routes
 app.use("/subCategories", router.SubCategoryRouter);
+// brand routes
+app.use("/brands", router.brandRouter);
 app.use(globaleResponse);
 
 
