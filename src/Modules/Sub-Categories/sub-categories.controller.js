@@ -141,9 +141,6 @@ export const updateSubCategory = async (req, res, next) => {
   if (req.file){
     //split the public_id
     const splitedPublicId =public_id_new.split(`${subCategory.customId}/`)[1];
-    console.log("subCategory.customId", subCategory.customId); 
-    console.log("splitedPublicId", splitedPublicId);
-    console.log("subcategory",subCategory)
     // upload the new image
     const { secure_url } = await uploadFile({
       file: req.file.path,

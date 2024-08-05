@@ -5,7 +5,7 @@ import * as controller from "./brand.controller.js";
 import * as Middlewares from "../../Middlewares/index.js";
 // utils
 import { extensions } from "../../utils/index.js";
-import { createBrandSchema, deleteBrandSchema, filterBrandSchema, getAllBrandSchema } from "./brand.schema.js";
+import { createBrandSchema, deleteBrandSchema, filterBrandSchema, getAllBrandSchema, updateBrandSchema } from "./brand.schema.js";
 
 const brandRouter = Router();
 const { errorHandler, multerHost,validationMiddleware } = Middlewares;
@@ -30,9 +30,18 @@ brandRouter.get(
 )
 // delete Brand by id
 brandRouter.delete(
-  
   "/deleteBrand/:id",
   validationMiddleware(deleteBrandSchema),
   errorHandler(controller.deleteBrand)
 )
+// update brand
+brandRouter.put(
+  "/updateBrand/:id",
+  multerHost({ allowedExtensions: extensions.Images }).single("image"),
+  validationMiddleware(updateBrandSchema),
+  errorHandler(controller.updateBrand)
+)
+
+
+
 export { brandRouter };

@@ -93,3 +93,28 @@ export const deleteBrandSchema = {
       }),
   }),
 }
+// update brand schema
+
+
+export const updateBrandSchema = {
+  params: Joi.object({
+    id: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation").required()
+      .messages({
+        "any.required": "Brand ID is required",
+        "string.base": "Brand ID must be a string",
+        "string.pattern": "Brand ID must be a valid ObjectId",
+      }),
+  }),
+  body: Joi.object({
+    public_id_new: Joi.string().messages({
+      "string.base": "Brand Image must be a string",
+    }),
+     name: Joi.string().min(3).messages({
+      "string.min": "Brand Name should have a minimum length of 3 characters",
+    })
+  }).min(1)
+    .messages({
+      "object.min": "At least one field is required in body such as name or image(send image and public_id_new)",
+    }),
+}

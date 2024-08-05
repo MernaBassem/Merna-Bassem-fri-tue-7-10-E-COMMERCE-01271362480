@@ -120,7 +120,9 @@ export const deleteBrand = async (req, res, next) => {
   // delete the related image from cloudinary
   const brandPath = `${process.env.UPLOADS_FOLDER}/Categories/${brand.categoryId.customId}/SubCategories/${brand.subCategoryId.customId}/Brands/${brand.customId}`;
   // delete the related products from db
-  // await Product.deleteMany({ brandId: brand.id });
+   /**
+    * @todoo delete the related products
+    */
   // delete the related folders from cloudinary
   await cloudinaryConfig().api.delete_resources_by_prefix(brandPath);
   await cloudinaryConfig().api.delete_folder(brandPath);
@@ -130,3 +132,52 @@ export const deleteBrand = async (req, res, next) => {
     deleteBrand
   });
 };
+//-------------------------------------
+
+/**
+ * @api {put} /brands/updateBrand/:id update brand
+ * @body name , public_id_new
+ * @param id 
+ * @return update brand
+ */
+
+export const updateBrand = async(req,res,next)=>{
+  // destruct id from params 
+  const {id} = req.params;
+  // find the brand by id
+  const brand = await Brand.findById(id).populate("categoryId").populate("subCategoryId");
+  if(!brand){
+    return next(new ErrorClass("brand not found", 404, "brand not found"));
+  }
+  // destruct name from body
+  const {name, public_id_new} = req.body;
+  // if name change  brand slug changed
+  if(name){
+    brand.name = name
+    brand.slug = slugify(name, {
+    replacement: "_",
+    lower: true,
+  });
+  }
+ 
+  // image 
+  if(req.file){
+    //split the public_id
+    const splitedPublicId =public_id_new.split(`${brand.customId}/`)[1];
+    // upload the new image
+    const { secure_url } = await uploadFile({
+      file: req.file.path,
+      folder: `${process.env.UPLOADS_FOLDER}/Categories/${brand.categoryId.customId}/SubCategories/${brand.subCategoryId.customId}/Brands/${brand.customId}`,
+      publicId: splitedPublicId,
+    });
+    // update the image
+    brand.Images.secure_url = secure_url;
+  }
+  // save the brand
+  await brand.save();
+  // send the response
+  res.status(200).json({
+    message: "brand updated successfully",
+    brand,
+  });
+}
