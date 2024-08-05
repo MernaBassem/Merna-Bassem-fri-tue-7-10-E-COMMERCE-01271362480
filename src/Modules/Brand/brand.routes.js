@@ -5,17 +5,22 @@ import * as controller from "./brand.controller.js";
 import * as Middlewares from "../../Middlewares/index.js";
 // utils
 import { extensions } from "../../utils/index.js";
-import { createBrandSchema } from "./brand.schema.js";
+import { createBrandSchema, getAllBrandSchema } from "./brand.schema.js";
 
 const brandRouter = Router();
-const { errorHandler, multerHost } = Middlewares;
-
+const { errorHandler, multerHost,validationMiddleware } = Middlewares;
+// create brand
 brandRouter.post(
   "/createBrand",
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
-  Middlewares.validationMiddleware(createBrandSchema),
+  validationMiddleware(createBrandSchema),
   errorHandler(controller.createBrand)
 );
-
+// get all brand
+brandRouter.get(
+  "/getAllBrand",
+  validationMiddleware(getAllBrandSchema),
+  errorHandler(controller.getAllBrand)
+)
 
 export { brandRouter };

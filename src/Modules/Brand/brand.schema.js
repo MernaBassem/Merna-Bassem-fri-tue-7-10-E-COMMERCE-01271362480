@@ -28,3 +28,38 @@ export const createBrandSchema = {
       }),
     })
 }
+
+// get brand name or slug or id 
+
+export const getBrandSchema = {
+  query: Joi.object({
+    name: Joi.string().messages({
+      "string.base": "Brand Name must be a string"
+    }),
+    id: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation")
+      .messages({
+        "string.base": "Brand ID must be a string",
+        "string.pattern": "Brand ID must be a valid ObjectId",
+      }),
+    slug: Joi.string().messages({
+      "string.base": "Brand Slug must be a string"
+    }),
+  }).min(1)
+    .messages({
+      "object.min": "At least one field is required in query parameters such as name, id, or slug",
+    }),
+}
+
+// get all brand schema
+export const getAllBrandSchema = {
+  // check page and limit number 
+  query: Joi.object({
+    page: Joi.number().messages({
+      "number.base": "Page must be a number",
+    }),
+    limit: Joi.number().messages({
+      "number.base": "Limit must be a number",
+    }),
+  }),
+}
