@@ -79,3 +79,17 @@ export const filterBrandSchema = {
         "At least one field is required in query parameters such as name, id, or slug or subCategoryId or categoryId",
     }),
 };
+
+
+// delete Brand schema
+export const deleteBrandSchema = {
+  params: Joi.object({
+    id: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation").required()
+      .messages({
+        "any.required": "Brand ID is required",
+        "string.base": "Brand ID must be a string",
+        "string.pattern": "Brand ID must be a valid ObjectId",
+      }),
+  }),
+}

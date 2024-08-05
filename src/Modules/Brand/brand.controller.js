@@ -98,3 +98,35 @@ export const filterBrand = async (req, res, next) => {
     brands,
   });
 }
+
+// ----------------------------------------
+
+/**
+ * @api {delete} /brands/deleteBrand/:id delete brand
+ * @return delete brand
+ */
+
+export const deleteBrand = async (req, res, next) => {
+  // get the brand id
+  const { id } = req.params;
+
+  // find the brand by id
+  const brand = await Brand.findByIdAndDelete(id)
+    .populate("categoryId")
+    .populate("subCategoryId");
+  if (!brand) {
+    return next(new ErrorClass("brand not found", 404, "brand not found"));
+  }
+  // delete the related image from cloudinary
+  const brandPath = `${process.env.UPLOADS_FOLDER}/Categories/${brand.categoryId.customId}/SubCategories/${brand.subCategoryId.customId}/Brands/${brand.customId}`;
+  // delete the related products from db
+  // await Product.deleteMany({ brandId: brand.id });
+  // delete the related folders from cloudinary
+  await cloudinaryConfig().api.delete_resources_by_prefix(brandPath);
+  await cloudinaryConfig().api.delete_folder(brandPath);
+
+  res.status(200).json({
+    message: "brand deleted successfully",
+    deleteBrand
+  });
+};
