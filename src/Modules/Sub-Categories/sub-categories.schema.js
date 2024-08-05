@@ -7,15 +7,15 @@ import { extensions ,objectIdValidation } from "../../utils/index.js";
 export const createSubCategorySchema = {
     body: Joi.object({
         name: Joi.string().min(3).required().messages({
-            "string.min": "Category Name should have a minimum length of 3 characters",
-            "any.required": "Category Name is required",
-            "string.base": "Category Name must be a string",
+            "string.min": "SubCategory Name should have a minimum length of 3 characters",
+            "any.required": "SubCategory Name is required",
+            "string.base": "SubCategory Name must be a string",
         }), 
     }),
     query: Joi.object({
         categoryId: Joi.string().required().messages({
-            "any.required": "Category Id is required",
-            "string.base": "Category Id must be a string",
+            "any.required": "SubCategory Id is required",
+            "string.base": "SubCategory Id must be a string",
         }),
     }),
 }
@@ -37,16 +37,16 @@ export const getAllSubCategorySchema = {
 export const getSubCategorySchema = {
   query: Joi.object({
     name: Joi.string().messages({
-      "string.base": "Category Name must be a string"
+      "string.base": "SubCategory Name must be a string"
     }),
     id: Joi.string()
       .custom(objectIdValidation, "Object ID Validation")
       .messages({
-        "string.base": "Category ID must be a string",
-        "string.pattern": "Category ID must be a valid ObjectId",
+        "string.base": "SubCategory ID must be a string",
+        "string.pattern": "SubCategory ID must be a valid ObjectId",
       }),
     slug: Joi.string().messages({
-      "string.base": "Category Slug must be a string"
+      "string.base": "SubCategory Slug must be a string"
     }),
   }).min(1)
     .messages({
@@ -60,17 +60,17 @@ export const updateSubCategorySchema = {
     id: Joi.string()
       .custom(objectIdValidation, "Object ID Validation").required()
       .messages({
-        "any.required": "Category ID is required",
-        "string.base": "Category ID must be a string",
-        "string.pattern": "Category ID must be a valid ObjectId",
+        "any.required": "SubCategory ID is required",
+        "string.base": "SubCategory ID must be a string",
+        "string.pattern": "SubCategory ID must be a valid ObjectId",
       }),
   }),
   body: Joi.object({
     public_id_new: Joi.string().messages({
-      "string.base": "Category Image must be a string",
+      "string.base": "SubCategory Image must be a string",
     }),
      name: Joi.string().min(3).messages({
-      "string.min": "Category Name should have a minimum length of 3 characters",
+      "string.min": "SubCategory Name should have a minimum length of 3 characters",
     })
   }).min(1)
     .messages({
@@ -83,9 +83,9 @@ export const deleteSubCategorySchema = {
     id: Joi.string()
       .custom(objectIdValidation, "Object ID Validation").required()
       .messages({
-        "any.required": "Category ID is required",
-        "string.base": "Category ID must be a string",
-        "string.pattern": "Category ID must be a valid ObjectId",
+        "any.required": "SubCategory ID is required",
+        "string.base": "SubCategory ID must be a string",
+        "string.pattern": "SubCategory ID must be a valid ObjectId",
       }),
   }),
 }

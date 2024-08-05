@@ -78,3 +78,23 @@ export const getAllBrand = async (req, res, next) => {
     brands,
   });
 };
+//-----------------------------
+/**
+ * @api {get} /brands/filterBrand  get brand by id or slug or name or categoryId or subCategoryId
+ * @return get brand
+ */
+
+export const filterBrand = async (req, res, next) => {
+  const { id, slug, name, categoryId, subCategoryId } = req.query;
+  const queryFilter = {};
+  if (id) queryFilter._id = id;
+  if (slug) queryFilter.slug = slug;
+  if (name) queryFilter.name = name;
+  if (categoryId) queryFilter.categoryId = categoryId;
+  if (subCategoryId) queryFilter.subCategoryId = subCategoryId;
+  const brands = await Brand.find(queryFilter);
+  res.status(200).json({
+    message: "Brands fetched successfully",
+    brands,
+  });
+}
