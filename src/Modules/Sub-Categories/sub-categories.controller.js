@@ -79,7 +79,7 @@ export const createSubCategory = async (req, res, next) => {
 export const getAllSubCategory = async (req, res, next) => {
   const { page = 1, limit = 2 } = req.query;
   const skip = (page - 1) * limit;
-  const subCategories = await SubCategory.paginate({}, { page, limit, skip });
+  const subCategories = await SubCategory.paginate({}, { page, limit, skip,populate: "brands" });
   res.status(200).json({
     message: "Sub-categories fetched successfully",
     subCategories,

@@ -46,5 +46,16 @@ const subcategorySchema = new Schema(
   { timestamps: true }
 );
 
+// Virtual field to populate jobs
+subcategorySchema.virtual("brands", {
+  ref: "Brand",
+  localField: "_id",
+  foreignField: "subCategoryId",
+});
+
+// Ensure virtual fields are included in the output
+subcategorySchema.set("toJSON", { virtuals: true });
+
+
 export const SubCategory =
   mongoose.models.SubCategory || model("SubCategory", subcategorySchema);
