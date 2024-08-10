@@ -1,7 +1,6 @@
 
 
 import mongoose from "./global-setup.js";
-import { Brand } from "./Models/brand.models.js";
 
 // connection db use mongoose
 export const connection_db = async () => {

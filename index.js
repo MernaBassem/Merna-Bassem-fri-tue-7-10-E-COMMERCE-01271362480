@@ -16,6 +16,8 @@ app.use("/categories", router.categoryRouter);
 app.use("/subCategories", router.SubCategoryRouter);
 // brand routes
 app.use("/brands", router.brandRouter);
+// product routes
+app.use("/products", router.ProductRouter);
 app.use(globaleResponse);
 
 
