@@ -17,14 +17,18 @@ const { errorHandler, getDocumentByName, multerHost, validationMiddleware } =
 const ProductRouter = Router();
 
 // routes
-// create subCategory
+// create product
 ProductRouter.post(
   "/addProduct",
   multerHost({ allowedExtensions: extensions.Images }).array("image", 5),
   validationMiddleware(addProductSchema),
   errorHandler(controller.addProduct)
 );
-
+// delete product
+ProductRouter.delete(
+  "/deleteProduct/:productId",
+  errorHandler(controller.deleteProduct)
+)
 
 export { ProductRouter };
 

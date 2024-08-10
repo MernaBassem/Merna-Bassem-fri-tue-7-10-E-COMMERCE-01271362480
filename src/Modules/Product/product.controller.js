@@ -12,6 +12,7 @@ import { Brand ,Product} from "../../../DB/Models/index.js";
 import {
   ErrorClass,
   uploadFile,
+  cloudinaryConfig
 } from "../../utils/index.js";
 
 export const addProduct = async(req, res, next) => {
@@ -80,3 +81,34 @@ export const addProduct = async(req, res, next) => {
   });
 
 }
+// ----------------------------------------------------
+
+/** 
+ * @api {delete} /products/deleteProduct  Delete Product
+ * @query productId
+*/
+
+export const deleteProduct = async(req, res, next) => {
+    // productId from params
+    const { productId } = req.params;
+    // find product
+    const product = await Product.findByIdAndDelete(productId).populate("categoryId subCategoryId brandId");
+    if(!product){
+        return next(new ErrorClass("Product not found", 404, "Product not found"));
+    }
+    console.log({product});
+  const brandCustomId = product.brandId.customId;
+  const catgeoryCustomId = product.categoryId.customId;
+  const subCategoryCustomId = product.subCategoryId.customId;
+
+    //  delete related images from cloudinary
+    const ProductPath =  `${process.env.UPLOADS_FOLDER}/Categories/${catgeoryCustomId}/SubCategories/${subCategoryCustomId}/Brands/${brandCustomId}/Products/${product.Images.customId}`;
+     // delete the related folders from cloudinary
+  await cloudinaryConfig().api.delete_resources_by_prefix(ProductPath);
+  await cloudinaryConfig().api.delete_folder(ProductPath);
+
+  res.status(200).json({
+    message: "product deleted successfully",
+    product
+  });
+  }
