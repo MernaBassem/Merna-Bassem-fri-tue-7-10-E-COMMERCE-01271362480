@@ -7,7 +7,7 @@ import * as controller from "./product.controller.js";
 import { extensions } from "../../utils/index.js";
 // middlewares
 import * as middlewares from "../../Middlewares/index.js";
-import { addProductSchema } from "./product.schema.js";
+import { addProductSchema, updateProductSchema } from "./product.schema.js";
 
 // get the required middlewares
 const { errorHandler, getDocumentByName, multerHost, validationMiddleware } =
@@ -29,7 +29,13 @@ ProductRouter.delete(
   "/deleteProduct/:productId",
   errorHandler(controller.deleteProduct)
 )
-
+// update product
+ProductRouter.put(
+    "/updateProduct/:productId",
+    multerHost({ allowedExtensions: extensions.Images }).single("image"),
+    validationMiddleware(updateProductSchema),
+    errorHandler(controller.updateProduct)
+)
 export { ProductRouter };
 
 
