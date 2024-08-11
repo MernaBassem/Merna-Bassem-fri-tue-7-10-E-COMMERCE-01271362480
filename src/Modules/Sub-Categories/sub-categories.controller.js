@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 // utils
 import { ErrorClass, cloudinaryConfig, uploadFile } from "../../utils/index.js";
 // models
-import { Brand, Category, SubCategory } from "../../../DB/Models/index.js";
+import { Brand, Category, Product, SubCategory } from "../../../DB/Models/index.js";
 
 /**
  * @api {post} /subCategories/createSubCategory
@@ -185,7 +185,12 @@ export const deleteSubCategory = async (req, res, next) => {
 
 
     // delete all brands
-    await Brand.deleteMany({ subCategoryId: subCategory._id });
+   const deletedBrands=  await Brand.deleteMany({ subCategoryId: subCategory._id });
+    // check if subcategories are deleted already
+  
+    if (deletedBrands.deletedCount) {
+      const deletedProducts = await Product.deleteMany({ subCategoryId: subCategory._id });
+  }
    /**
    * @todo  delete the related   ,  products from db
    */

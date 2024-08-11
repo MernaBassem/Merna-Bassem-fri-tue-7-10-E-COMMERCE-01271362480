@@ -3,7 +3,7 @@
 import slugify from "slugify";
 import { nanoid } from "nanoid";
 // models
-import { SubCategory, Brand } from "../../../DB/Models/index.js";
+import { SubCategory, Brand, Product } from "../../../DB/Models/index.js";
 // uitls
 import { cloudinaryConfig, ErrorClass, uploadFile } from "../../utils/index.js";
 
@@ -117,6 +117,8 @@ export const deleteBrand = async (req, res, next) => {
   if (!brand) {
     return next(new ErrorClass("brand not found", 404, "brand not found"));
   }
+    const deletedProduct = await Product.deleteMany({ brandId: brand._id });
+
   // delete the related image from cloudinary
   const brandPath = `${process.env.UPLOADS_FOLDER}/Categories/${brand.categoryId.customId}/SubCategories/${brand.subCategoryId.customId}/Brands/${brand.customId}`;
   // delete the related products from db

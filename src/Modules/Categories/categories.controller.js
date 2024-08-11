@@ -1,7 +1,7 @@
 import slugify from "slugify";
 import { nanoid } from "nanoid";
 import { cloudinaryConfig, uploadFile, ErrorClass } from "../../utils/index.js";
-import { Brand, Category, SubCategory } from "../../../DB/Models/index.js";
+import { Brand, Category, Product, SubCategory } from "../../../DB/Models/index.js";
 
 /**
  * @api {POST} /categories/createCategory  create a  new category
@@ -192,6 +192,10 @@ export const deleteCategory = async (req, res, next) => {
   if (deletedSubCategories.deletedCount) {
     // delete the relivant brands from db
     const deletedBrands = await Brand.deleteMany({ categoryId: category._id  });
+    // check if brands are deleted already delete product
+    if (deletedBrands.deletedCount) {
+      const deletedProducts = await Product.deleteMany({ categoryId: category._id });
+    }
   }
 
 
