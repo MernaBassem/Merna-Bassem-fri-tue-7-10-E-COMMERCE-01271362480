@@ -10,6 +10,7 @@ import { Brand, Product } from "../../../DB/Models/index.js";
 // utils
 import { ErrorClass, uploadFile, cloudinaryConfig, calculateProductPrice } from "../../utils/index.js";
 import slugify from "slugify";
+import { ApiFeatures } from "../../utils/api-feature.utils.js";
 
 export const addProduct = async (req, res, next) => {
   // destruct from body
@@ -238,5 +239,22 @@ export const getProduct = async (req, res, next) => {
   });
 };
 
+//-------------------------------
+/**
+ * @api {get} /products/getProducts Get Products use class apiFeature
+ * @returns products
+ */
 
+export const getProducts = async (req, res, next) => {
+  const mongooseQuery = Product.find();
+  const apiFeaturesInstance = new ApiFeatures(mongooseQuery, req.query)
+    .filter()
+    .sort()
+    .paginate();
+  const products = await apiFeaturesInstance.mongooseQuery;
 
+  res.status(200).json({
+    message: "Products fetched successfully",
+    products,
+  });
+};

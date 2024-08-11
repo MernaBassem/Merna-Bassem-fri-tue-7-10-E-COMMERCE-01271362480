@@ -42,6 +42,8 @@ ProductRouter.get(
   validationMiddleware(getProductSchema),
   errorHandler(controller.getProduct)
 )
+// get products
+ProductRouter.get("/getProducts", errorHandler(controller.getProducts));
 export { ProductRouter };
 
 
