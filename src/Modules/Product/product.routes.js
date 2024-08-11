@@ -7,7 +7,7 @@ import * as controller from "./product.controller.js";
 import { extensions } from "../../utils/index.js";
 // middlewares
 import * as middlewares from "../../Middlewares/index.js";
-import { addProductSchema, updateProductSchema } from "./product.schema.js";
+import { addProductSchema, getProductSchema, updateProductSchema } from "./product.schema.js";
 
 // get the required middlewares
 const { errorHandler, getDocumentByName, multerHost, validationMiddleware } =
@@ -35,6 +35,12 @@ ProductRouter.put(
     multerHost({ allowedExtensions: extensions.Images }).single("image"),
     validationMiddleware(updateProductSchema),
     errorHandler(controller.updateProduct)
+)
+// get product by id
+ProductRouter.get(
+  "/getProductById/:productId",
+  validationMiddleware(getProductSchema),
+  errorHandler(controller.getProduct)
 )
 export { ProductRouter };
 

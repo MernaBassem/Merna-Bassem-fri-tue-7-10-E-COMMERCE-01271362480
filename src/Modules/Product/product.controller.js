@@ -215,3 +215,28 @@ export const updateProduct = async (req, res, next) => {
   })
 
 }
+//--------------------------------
+/**
+ * @api {get} /products/getProduct/:productId Get Product byId
+ * @params productId
+ * @returns product
+ */
+export const getProduct = async (req, res, next) => {
+  const { productId } = req.params;
+
+  const product = await Product.findById(productId).populate(
+    "categoryId subCategoryId brandId"
+  );
+
+  if (!product) {
+    return next(new ErrorClass("Product not found", 404, "Product not found"));
+  }
+
+  res.status(200).json({
+    message: "Product fetched successfully",
+    product,
+  });
+};
+
+
+

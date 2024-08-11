@@ -131,3 +131,16 @@ export const updateProductSchema = {
     }),
   }),
 }
+//---------
+// get product schema validation
+export const getProductSchema = {
+  params: Joi.object({
+    productId: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation").required()
+      .messages({
+        "any.required": "Product ID is required",
+        "string.base": "Product ID must be a string",
+        "string.pattern": "Product ID must be a valid ObjectId",
+      }),
+  }),
+}
