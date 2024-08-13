@@ -85,5 +85,4 @@ userSchema.pre("validate", function (next) {
   next();
 });
 
-const User = mongoose.models.User || model("User", userSchema);
-export default User;
+export const User = mongoose.models.User || model("User", userSchema);

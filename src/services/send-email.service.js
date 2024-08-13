@@ -23,7 +23,12 @@ export const sendEmailService = async ({
       user: "mernabassem21@gmail.com", // email will send from
       pass: "yajvbppxnvvpitbe",  // password email (app password)
     },
+    tls: {
+    // do not fail on invalid certs
+    rejectUnauthorized: false,
+  },
   });
+  
   // configer message ( mail )
   const info = await transporter.sendMail({
     from: "No Reply <mernabassem21@gmail.com>",
