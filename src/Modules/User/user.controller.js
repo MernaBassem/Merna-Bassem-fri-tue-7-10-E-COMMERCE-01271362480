@@ -9,14 +9,13 @@ import {User} from "../../../DB/Models/index.js";
 // signUp User
 
 /** 
-* @api {post} /user/signup
+* @api {post} /users/signup
 * @body firstName , lastName , email , password , recoveryEmail , DOB , mobileNumber , role
 * @return signUp User
 */
  
 
 export const signUp = async (req, res, next) => {
-    console.log('Confirmation Secret:', process.env.CONFIRMATION_SECRET);
 
   // destruct data from req.body
   const {
@@ -100,7 +99,7 @@ export const signUp = async (req, res, next) => {
 // `-------------------------------------------------------------------------
 
 /**
- * @api {get} /user/confirmEmail/:token
+ * @api {get} /users/confirmEmail/:token
  * @return confirm Email
  */
 
@@ -176,3 +175,66 @@ export const confirmEmail = async (req, res, next) => {
 };
 
 //-----------------------------------------------------------------------
+
+// 2-signIn User
+
+/**
+ * @api {post} /users/signIn
+ * @body email, password, mobileNumber, recoveryEmail
+ * @return token
+ */
+export const signIn = async (req, res, next) => {
+  // destruct data from req.body
+  const { email, password, mobileNumber, recoveryEmail } = req.body;
+
+  // Check if the user exists
+  const user = await User.findOne({
+    $or: [{ email }, { mobileNumber }, { recoveryEmail }],
+  });
+  if (!user) {
+    return next(
+      new ErrorClass(
+        "Email or Mobile Number or Password or  Recovery Email is incorrect",
+        400,
+        { email, password, mobileNumber, recoveryEmail },
+        "SignIn API"
+      )
+    );
+  }
+  // check email is active by comfirm email
+  if (user.isConfirmed === false) {
+    return next(
+      new ErrorClass(
+        "Please Frist Active Your Email ",
+        400,
+        user.email,
+        "SignIn API"
+      )
+    );
+  }
+
+  // Verify the password
+  const isPasswordValid = compareSync(password, user.password);
+  if (!isPasswordValid) {
+    return next(
+      new ErrorClass(
+        "Email or Mobile Number or Password or  Recovery Email is incorrect",
+        400,
+        { email, password, mobileNumber, recoveryEmail },
+        "SignIn API"
+      )
+    );
+  }
+
+  // Sign a JWT token with user's ID and a secret key (make sure to use a strong secret)
+  const token = jwt.sign({ userId: user._id }, process.env.LOGIN_SECRET, {
+    expiresIn: "1h",
+  }); // Token expires in 1 hour
+
+  // Update status from online
+  const updatedUser = await User.findByIdAndUpdate(user._id, {
+    status: "online",
+  });
+
+  return res.status(200).json({ token });
+};

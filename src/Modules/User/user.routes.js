@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import * as userController from "./user.controller.js";
 import * as middlewares from "../../Middlewares/index.js";
-import {SignUpSchema,} from "./user.schema.js";
+import {SignInSchema, SignUpSchema,} from "./user.schema.js";
 
 // get the required middlewares
 const { errorHandler, validationMiddleware } = middlewares;
@@ -19,5 +19,12 @@ UserRouter.get(
   "/confirm-email/:token",
    errorHandler(userController.confirmEmail)
   );
+// signIn api
+UserRouter.post(
+  "/signIn",
+  errorHandler(validationMiddleware(SignInSchema)),
+  errorHandler(userController.signIn)
+);
+
 
 export { UserRouter };
