@@ -649,3 +649,34 @@ export const resetPassword = async (req, res, next) => {
   });
 };
 
+
+//-----------------------------------------------------
+// Get user account data
+/**
+ * @api {get} /user/getAccountData get user account data
+ * @return get user account data
+ */
+
+
+
+export const getAccountData = async (req, res, next) => {
+  // check status online
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass(
+        "User must be online",
+        400,
+        "User must be online",
+        "get account data API"
+      )
+    );
+  }
+
+  // get user data only owner the take id from req.authUser
+  const userData = await User.findById(req.authUser._id);
+  // check user found
+  if (!userData) {
+    return next(new ErrorClass("User not found", 404, "get account data API"));
+  }
+  return res.status(200).json({ userData });
+};

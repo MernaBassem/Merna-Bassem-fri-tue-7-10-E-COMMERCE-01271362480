@@ -66,5 +66,12 @@ UserRouter.post(
   errorHandler(validationMiddleware(resetPasswordSchema)),
   errorHandler(userController.resetPassword)
 );
+//get user api if user login
+UserRouter.get(
+  "/getAccountData",
+  errorHandler(authenticate()),
+  errorHandler(validationMiddleware(generalSchemaCheckOnlyToken)),
+  errorHandler(userController.getAccountData)
+);
 
 export { UserRouter };
