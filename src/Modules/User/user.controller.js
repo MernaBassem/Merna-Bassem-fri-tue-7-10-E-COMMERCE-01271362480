@@ -420,3 +420,79 @@ export const deleteUser = async (req, res, next) => {
     .status(200)
     .json({ message: "User deleted successfully", deletedUser });
 };
+//----------------------------------------
+
+// Update password
+
+/*
+answer:
+after authentication and validation
+1- check user online
+2- destruct old password and new password from body
+3- compare password with old password
+4- if compare false return error
+5- if compare true hash new password
+6- update password and status to offline try login by new password
+7- return updated password
+*/
+
+export const updatePassword = async (req, res, next) => {
+  // check status online
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass(
+        "User must be online",
+        400,
+        "User must be online",
+        "update password API"
+      )
+    );
+  }
+
+  // destruct old password and new password from body
+  const { oldPassword, newPassword } = req.body;
+  // check if old password not match compare password API
+  const oldPasswordMatch = compareSync(oldPassword, req.authUser.password);
+  // check old password match
+  if (!oldPasswordMatch) {
+    return next(
+      new ErrorClass(
+        "Old password not match with user password",
+        400,
+        "Old password not match with user password",
+        "update password API"
+      )
+    );
+  }
+
+  // hash new password
+  const hashedPassword = hashSync(newPassword, +process.env.SALT_ROUNDS);
+  // update password
+  const updatedPassword = await User.findByIdAndUpdate(
+    req.authUser._id,
+    {
+      password: hashedPassword,
+      status: "offline",
+    },
+    { new: true }
+  );
+  // check if password updated
+  if (!updatedPassword) {
+    return next(
+      new ErrorClass(
+        "Password not updated",
+        400,
+        "Password not updated",
+        "update password API"
+      )
+    );
+  }
+  // return updated password
+  return res.status(200).json({
+    message:
+      "Password updated successfully , please login agin by new password",
+    updatedPassword,
+  });
+};
+
+//-------------------------------------------------------

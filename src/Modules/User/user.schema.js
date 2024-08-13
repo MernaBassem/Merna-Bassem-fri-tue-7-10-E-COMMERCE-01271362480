@@ -219,3 +219,38 @@ export const updateUserSchema = {
   }),
 };
 
+/**
+ *  schema update password
+ * check validation of the old password and new password from body
+ */
+
+export const updatePasswordSchema = {
+  body: Joi.object({
+    oldPassword: Joi.string()
+      .pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      )
+      .required()
+      .messages({
+        "string.pattern.base":
+          "oldPassword must have at least one lowercase letter, one uppercase letter, one number and one special character",
+        "any.required": "You need to provide a oldPassword",
+        "string.min":
+          "oldPassword should have a minimum length of 3 characters",
+        "string.base": "oldPassword must be a string",
+      }),
+    newPassword: Joi.string()
+      .pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      )
+      .required()
+      .messages({
+        "string.pattern.base":
+          "newPassword must have at least one lowercase letter, one uppercase letter, one number and one special character",
+        "any.required": "You need to provide a newPassword",
+        "string.min":
+          "newPassword should have a minimum length of 3 characters",
+        "string.base": "newPassword must be a string",
+      }),
+  }),
+};

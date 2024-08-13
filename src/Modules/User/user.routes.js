@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import * as userController from "./user.controller.js";
 import * as middlewares from "../../Middlewares/index.js";
-import {generalSchemaCheckOnlyToken, SignInSchema, SignUpSchema, updateUserSchema,} from "./user.schema.js";
+import {generalSchemaCheckOnlyToken, SignInSchema, SignUpSchema, updatePasswordSchema, updateUserSchema,} from "./user.schema.js";
 
 // get the required middlewares
 const { errorHandler, validationMiddleware,authenticate } = middlewares;
@@ -47,6 +47,11 @@ UserRouter.delete(
   errorHandler(validationMiddleware(generalSchemaCheckOnlyToken)),
   errorHandler(userController.deleteUser)
 );
-
-
+// api update user password
+UserRouter.patch(
+  "/updatePassword",
+  errorHandler(authenticate()),
+  errorHandler(validationMiddleware(updatePasswordSchema)),
+  errorHandler(userController.updatePassword)
+);
 export { UserRouter };
