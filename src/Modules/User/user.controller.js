@@ -408,13 +408,13 @@ export const deleteUser = async (req, res, next) => {
     return next(new ErrorClass("User not found", 404, "delete user API"));
   }
   // delete Product related to user
-  await Product.deleteMany({ addedBy: req.authUser._id });
+  await Product.deleteMany({ createdBy: req.authUser._id });
   // delete Brand related to user
-  await Brand.deleteMany({ addedBy: req.authUser._id });
+  await Brand.deleteMany({ createdBy: req.authUser._id });
   // delete subCategory related to user
-  await SubCategory.deleteMany({ addedBy: req.authUser._id });
+  await SubCategory.deleteMany({ createdBy: req.authUser._id });
   // delete category related to user
-  await Category.deleteMany({ addedBy: req.authUser._id });
+  await Category.deleteMany({ createdBy: req.authUser._id });
   // return deleted user
   return res
     .status(200)
@@ -490,17 +490,12 @@ export const updatePassword = async (req, res, next) => {
 
 //-------------------------------------------------------
 //Forget password
-
-/*
-answer:
-1- destruct email from body
-2- find user by email
-3- if user not found return error
-4- generate otp
-5- save otp and expiry in database
-6- send otp via email
-7- return response
-*/
+/**
+ * @api {post} /users/forgetPassword
+ * @body {string} email
+ * @return otp
+ * 
+ */
 
 export const forgetPassword = async (req, res, next) => {
   // destruct email from body
@@ -567,18 +562,11 @@ export const forgetPassword = async (req, res, next) => {
 };
 //-------------------------------------------
 // reset password
-
-/*
-answer:
-1- destruct email, otp and newPassword from body
-2- check if email, otp and newPassword are provided
-3- find user by email
-4- if user not found return error
-5- check if otp and otpExpiry are valid
-6- if invalid return error
-7- hash newPassword
-7- update password after hash and clear otp and otpExpiry in database
-8- return response
+/**
+ * @api {post} /users/resetPassword
+ * @body {string} email otp newPassword
+ * @return reset password
+ * 
 */
 
 export const resetPassword = async (req, res, next) => {
