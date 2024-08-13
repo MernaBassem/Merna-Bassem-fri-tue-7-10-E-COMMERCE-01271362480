@@ -15,6 +15,7 @@ export const generalRules = {
     "content-type": Joi.string(),
     accept: Joi.string().valid("application/json"),
     "accept-encoding": Joi.string(),
+    "cache-control": Joi.string(),
     host: Joi.string(),
     "content-length": Joi.string(),
     "connection": Joi.string(),

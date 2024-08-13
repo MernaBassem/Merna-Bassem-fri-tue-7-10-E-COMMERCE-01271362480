@@ -2,10 +2,10 @@ import { Router } from "express";
 
 import * as userController from "./user.controller.js";
 import * as middlewares from "../../Middlewares/index.js";
-import {SignInSchema, SignUpSchema,} from "./user.schema.js";
+import {generalSchemaCheckOnlyToken, SignInSchema, SignUpSchema,} from "./user.schema.js";
 
 // get the required middlewares
-const { errorHandler, validationMiddleware } = middlewares;
+const { errorHandler, validationMiddleware,authenticate } = middlewares;
 
 const UserRouter = Router();
 // signUp api
@@ -25,6 +25,14 @@ UserRouter.post(
   errorHandler(validationMiddleware(SignInSchema)),
   errorHandler(userController.signIn)
 );
+// logout api
+UserRouter.post(
+  "/logOut",
+  errorHandler(authenticate()),
+  errorHandler(validationMiddleware(generalSchemaCheckOnlyToken)),
+  errorHandler(userController.logOut)
+);
+
 
 
 export { UserRouter };

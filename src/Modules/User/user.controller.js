@@ -238,3 +238,35 @@ export const signIn = async (req, res, next) => {
 
   return res.status(200).json({ token });
 };
+//---------------------------
+/**
+ * @api {post} users/logOut
+ * @return logout
+ */
+export const logOut = async (req, res, next) => {
+  // check user is online
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass(
+        "User must be online",
+        400,
+        "User must be online",
+        "logout API"
+      )
+    );
+  }
+  // Update the  status of the user to "offline"
+  const updatedUser = await User.findByIdAndUpdate(
+    req.authUser._id,
+    {
+      status: "offline",
+    },
+    { new: true }
+  );
+  // check user found
+  if (!updatedUser) {
+    return next(new ErrorClass("User not found", 404, "logout API"));
+  }
+
+  return res.status(200).json({ message: "LogOut Successful" });
+};
