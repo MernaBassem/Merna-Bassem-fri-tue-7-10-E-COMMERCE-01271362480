@@ -40,6 +40,13 @@ UserRouter.put(
   errorHandler(validationMiddleware(updateUserSchema)),
   errorHandler(userController.updateAccount)
 );
+// delete user api
+UserRouter.delete(
+  "/deleteAccount",
+  errorHandler(authenticate()),
+  errorHandler(validationMiddleware(generalSchemaCheckOnlyToken)),
+  errorHandler(userController.deleteUser)
+);
 
 
 export { UserRouter };

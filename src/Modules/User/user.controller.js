@@ -3,20 +3,23 @@ import jwt from "jsonwebtoken";
 
 import { sendEmailService } from "../../services/send-email.service.js";
 import { ErrorClass } from "../../utils/index.js";
-import {User} from "../../../DB/Models/index.js";
-
+import {
+  Brand,
+  Category,
+  Product,
+  SubCategory,
+  User,
+} from "../../../DB/Models/index.js";
 
 // signUp User
 
-/** 
-* @api {post} /users/signup
-* @body firstName , lastName , email , password , recoveryEmail , DOB , mobileNumber , role
-* @return signUp User
-*/
- 
+/**
+ * @api {post} /users/signup
+ * @body firstName , lastName , email , password , recoveryEmail , DOB , mobileNumber , role
+ * @return signUp User
+ */
 
 export const signUp = async (req, res, next) => {
-
   // destruct data from req.body
   const {
     firstName,
@@ -63,11 +66,11 @@ export const signUp = async (req, res, next) => {
 
   // generate token
   const token = jwt.sign(
-  { _id: userInstance._id },
-  process.env.CONFIRMATION_SECRET,
-  { expiresIn: '10m' }
-);
- 
+    { _id: userInstance._id },
+    process.env.CONFIRMATION_SECRET,
+    { expiresIn: "10m" }
+  );
+
   // confirmation Link
   const confirmationLink = `${req.protocol}://${req.headers.host}/users/confirm-email/${token}`;
   // send email
@@ -291,11 +294,11 @@ export const updateAccount = async (req, res, next) => {
     );
   }
   console.log(req.authUser);
-  
 
   // Destructure firstName, lastName, email, mobileNumber, recoveryEmail, DOB from the request body
-  const { firstName, lastName, email, mobileNumber, recoveryEmail, DOB } = req.body;
- 
+  const { firstName, lastName, email, mobileNumber, recoveryEmail, DOB } =
+    req.body;
+
   // Check email or mobile number uniqueness
   const existingUser = await User.findOne({
     $or: [{ email }, { mobileNumber }],
@@ -375,4 +378,45 @@ export const updateAccount = async (req, res, next) => {
   const updatedUser = await user.save();
   // Return success response
   return res.status(200).json({ message: "Update Successful", updatedUser });
+};
+
+//----------------------------
+
+// delete account
+/**
+ * @api {delete} /users/deleteUser
+ * @return deleted user
+ */
+
+export const deleteUser = async (req, res, next) => {
+  // check status online
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass(
+        "User must be online",
+        400,
+        "User must be online",
+        "delete user API"
+      )
+    );
+  }
+
+  // delete user
+  const deletedUser = await User.findByIdAndDelete(req.authUser._id);
+  // user not found
+  if (!deletedUser) {
+    return next(new ErrorClass("User not found", 404, "delete user API"));
+  }
+  // delete Product related to user
+  await Product.deleteMany({ addedBy: req.authUser._id });
+  // delete Brand related to user
+  await Brand.deleteMany({ addedBy: req.authUser._id });
+  // delete subCategory related to user
+  await SubCategory.deleteMany({ addedBy: req.authUser._id });
+  // delete category related to user
+  await Category.deleteMany({ addedBy: req.authUser._id });
+  // return deleted user
+  return res
+    .status(200)
+    .json({ message: "User deleted successfully", deletedUser });
 };
