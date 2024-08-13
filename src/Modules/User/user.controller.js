@@ -270,3 +270,109 @@ export const logOut = async (req, res, next) => {
 
   return res.status(200).json({ message: "LogOut Successful" });
 };
+//---------------------------
+// Update account.
+/**
+ * @api {put} /users/updateAccount
+ * @body firstName, lastName, email, mobileNumber, recoveryEmail, DOB
+ * @return updated data
+ */
+
+export const updateAccount = async (req, res, next) => {
+  // Check if the user is online
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass(
+        "User must be online",
+        400,
+        "User must be online",
+        "update account API"
+      )
+    );
+  }
+  console.log(req.authUser);
+  
+
+  // Destructure firstName, lastName, email, mobileNumber, recoveryEmail, DOB from the request body
+  const { firstName, lastName, email, mobileNumber, recoveryEmail, DOB } = req.body;
+ 
+  // Check email or mobile number uniqueness
+  const existingUser = await User.findOne({
+    $or: [{ email }, { mobileNumber }],
+  });
+  // If an existing user with the same email or mobile number is found, return an error
+  if (existingUser) {
+    return next(
+      new ErrorClass(
+        "Email or Mobile Number already exists",
+        400,
+        "Email or Mobile Number already exists",
+        "update account API"
+      )
+    );
+  }
+
+  // If the email is updated, send a verification email
+  if (email && email !== req.authUser.email) {
+    // Update isConfirmed to false and status to offline
+    const userInstance = await User.findByIdAndUpdate(
+      req.authUser._id,
+      {
+        isConfirmed: false,
+        status: "offline",
+      },
+      { new: true }
+    );
+    // Generate token
+    const token = jwt.sign(
+      { _id: userInstance._id },
+      process.env.CONFIRMATION_SECRET,
+      { expiresIn: "10m" }
+    );
+
+    // Create confirmation link
+    const confirmationLink = `${req.protocol}://${req.headers.host}/users/confirm-email/${token}`;
+
+    // Send email
+    const isEmailSent = await sendEmailService({
+      to: email,
+      subject: "Please confirm your email",
+      textMessage: "Please confirm your email",
+      htmlMessage: `<a href="${confirmationLink}">Click here to confirm your email</a>`,
+    });
+
+    // If the email was not sent, return an error
+    if (isEmailSent.rejected.length) {
+      return next(
+        new ErrorClass(
+          "Email Not Sent",
+          400,
+          "Email Not Sent",
+          email,
+          "update account API"
+        )
+      );
+    }
+  }
+
+  //  new variable contain user data
+  const user = req.authUser;
+  // check data is send or not (such new instance)
+  if (firstName) user.firstName = firstName;
+  if (lastName) user.lastName = lastName;
+  if (email) user.email = email;
+  if (mobileNumber) user.mobileNumber = mobileNumber;
+  if (recoveryEmail) user.recoveryEmail = recoveryEmail;
+  if (DOB) user.DOB = DOB;
+  // change username if find firstName and lastName
+  if (firstName || lastName) {
+    user.username = `${firstName || req.authUser.firstName}${
+      lastName || req.authUser.lastName
+    }`;
+  }
+
+  // Save the updated user data
+  const updatedUser = await user.save();
+  // Return success response
+  return res.status(200).json({ message: "Update Successful", updatedUser });
+};
