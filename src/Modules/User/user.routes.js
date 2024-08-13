@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import * as userController from "./user.controller.js";
 import * as middlewares from "../../Middlewares/index.js";
-import {generalSchemaCheckOnlyToken, SignInSchema, SignUpSchema, updatePasswordSchema, updateUserSchema,} from "./user.schema.js";
+import {forgetPasswordSchema, generalSchemaCheckOnlyToken, resetPasswordSchema, SignInSchema, SignUpSchema, updatePasswordSchema, updateUserSchema,} from "./user.schema.js";
 
 // get the required middlewares
 const { errorHandler, validationMiddleware,authenticate } = middlewares;
@@ -54,4 +54,17 @@ UserRouter.patch(
   errorHandler(validationMiddleware(updatePasswordSchema)),
   errorHandler(userController.updatePassword)
 );
+// forget password
+UserRouter.post(
+  "/forgetPassword",
+  errorHandler(validationMiddleware(forgetPasswordSchema)),
+  errorHandler(userController.forgetPassword)
+);
+// reset password
+UserRouter.post(
+  "/resetPassword",
+  errorHandler(validationMiddleware(resetPasswordSchema)),
+  errorHandler(userController.resetPassword)
+);
+
 export { UserRouter };

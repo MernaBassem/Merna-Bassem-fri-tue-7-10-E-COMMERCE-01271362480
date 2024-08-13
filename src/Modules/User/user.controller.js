@@ -423,19 +423,12 @@ export const deleteUser = async (req, res, next) => {
 //----------------------------------------
 
 // Update password
-
-/*
-answer:
-after authentication and validation
-1- check user online
-2- destruct old password and new password from body
-3- compare password with old password
-4- if compare false return error
-5- if compare true hash new password
-6- update password and status to offline try login by new password
-7- return updated password
+/**
+ * @api {patch} /users/updatePassword
+ * @body {string} oldPassword newPassword
+ * @return updated password
+ * 
 */
-
 export const updatePassword = async (req, res, next) => {
   // check status online
   if (req.authUser.status !== "online") {
@@ -496,3 +489,163 @@ export const updatePassword = async (req, res, next) => {
 };
 
 //-------------------------------------------------------
+//Forget password
+
+/*
+answer:
+1- destruct email from body
+2- find user by email
+3- if user not found return error
+4- generate otp
+5- save otp and expiry in database
+6- send otp via email
+7- return response
+*/
+
+export const forgetPassword = async (req, res, next) => {
+  // destruct email from body
+  const { email } = req.body;
+  // check if email is provided
+  if (!email) {
+    return next(
+      new ErrorClass(
+        "Email is required",
+        400,
+        "Send Email in body",
+        "forget password API"
+      )
+    );
+  }
+  // find user by email
+  const user = await User.findOne({ email });
+  // check if user exists
+  if (!user) {
+    return next(
+      new ErrorClass(
+        "User not found",
+        404,
+        "User not found",
+        "forget password API"
+      )
+    );
+  }
+
+  // generate otp
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  // set expire time of otp
+  const otpExpiry = Date.now() + 3600000;
+  // save otp and expiry in DataBase
+  const updateUser = await User.findByIdAndUpdate(
+    user._id,
+    { otp, otpExpiry },
+    { new: true }
+  );
+
+  //  send otp via email
+  const isEmailSent = await sendEmailService({
+    to: email,
+    subject: "Your OTP",
+    textMessage: "Your OTP",
+    htmlMessage: `<h1>${otp}</h1>`,
+  });
+
+  // check isEmailSent
+  if (!isEmailSent) {
+    return next(
+      new ErrorClass(
+        "Email not sent",
+        400,
+        "Email not sent",
+        "forget password API"
+      )
+    );
+  }
+  // return in state success
+  return res
+    .status(200)
+    .json({ message: "OTP sent successfully", isEmailSent });
+};
+//-------------------------------------------
+// reset password
+
+/*
+answer:
+1- destruct email, otp and newPassword from body
+2- check if email, otp and newPassword are provided
+3- find user by email
+4- if user not found return error
+5- check if otp and otpExpiry are valid
+6- if invalid return error
+7- hash newPassword
+7- update password after hash and clear otp and otpExpiry in database
+8- return response
+*/
+
+export const resetPassword = async (req, res, next) => {
+  // destruct email, otp and newPassword from body
+  const { email, otp, newPassword } = req.body;
+
+  // check if email and otp are provided
+  if (!email || !otp || !newPassword) {
+    return next(
+      new ErrorClass(
+        "Email, OTP and New Password are required",
+        400,
+        "Send Email, OTP and New Password in body",
+        "reset password API"
+      )
+    );
+  }
+
+  // find user by email
+  const user = await User.findOne({ email });
+
+  // check if user exists
+  if (!user) {
+    return next(
+      new ErrorClass(
+        "User not found",
+        404,
+        "User not found",
+        "reset password API"
+      )
+    );
+  }
+
+  // check otp valid
+  if (user.otp !== otp) {
+    return next(
+      new ErrorClass("Invalid OTP", 400, "Invalid OTP", "reset password API")
+    );
+  }
+
+  // check otp expired
+  if (Date.now() > user.otpExpiry) {
+    return next(
+      new ErrorClass("expired OTP", 400, "Invalid OTP", "reset password API")
+    );
+  }
+
+  // hash password
+  const hashedPassword = hashSync(newPassword, +process.env.SALT_ROUNDS);
+
+  // update password
+  const updateUser = await User.findByIdAndUpdate(
+    user._id,
+    { password: hashedPassword },
+    { new: true }
+  );
+
+  // clear otp and otpExpiry
+  const clearOTP = await User.findByIdAndUpdate(
+    user._id,
+    { otp: null, otpExpiry: null, status: "offline" },
+    { new: true }
+  );
+
+  // return success reset password
+  return res.status(200).json({
+    message: "Password reset successfully try login use new password",
+  });
+};
+

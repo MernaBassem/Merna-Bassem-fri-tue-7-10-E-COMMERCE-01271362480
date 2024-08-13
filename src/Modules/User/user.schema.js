@@ -254,3 +254,60 @@ export const updatePasswordSchema = {
       }),
   }),
 };
+
+//---------------------
+// forget password schema
+
+export const forgetPasswordSchema = {
+  body: Joi.object({
+    email: Joi.string()
+      .email({
+        minDomainSegments: 2,
+        maxDomainSegments: 4,
+        tlds: { allow: ["com", "net", "org"] },
+      })
+      .required()
+      .messages({
+        "string.email": "Email is not valid",
+        "any.required": "Email is required",
+        "string.base": "Email must be a string",
+      }),
+  }),
+};
+//---------------------------------------------
+// reset password schema
+// send email , otp , newPassword
+
+export const resetPasswordSchema = {
+  body: Joi.object({
+    email: Joi.string()
+      .email({
+        minDomainSegments: 2,
+        maxDomainSegments: 4,
+        tlds: { allow: ["com", "net", "org"] },
+      })
+      .required()
+      .messages({
+        "string.email": "Email is not valid",
+        "any.required": "Email is required",
+        "string.base": "Email must be a string",
+      }),
+    otp: Joi.string().required().messages({
+      "string.base": "Otp must be a string",
+      "any.required": "Otp is required",
+    }),
+    newPassword: Joi.string()
+      .pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      )
+      .required()
+      .messages({
+        "string.pattern.base":
+          "New Password must have at least one lowercase letter, one uppercase letter, one number and one special character",
+        "any.required": "You need to provide a New Password",
+        "string.min":
+          "New Password should have a minimum length of 3 characters",
+        "string.base": "New Password must be a string",
+      }),
+  }),
+};
