@@ -1,14 +1,14 @@
 // system roles (user and company_HR)
 export const systemRoles = {
   USER: "user",
-  COMPANY_HR: "company_HR",
+  VENDOR: "vendor",
 
 };
 
-const { USER, COMPANY_HR} = systemRoles;
+const { USER, VENDOR} = systemRoles;
 // Cases of roles
 export const roles = {
-  USER_COMPANY_HR: [USER, COMPANY_HR],
+  USER_VENDOR :  [USER,VENDOR ],
   USER:[USER],
-  COMPANY_HR:[COMPANY_HR]
+  VENDOR:[VENDOR]
 };
