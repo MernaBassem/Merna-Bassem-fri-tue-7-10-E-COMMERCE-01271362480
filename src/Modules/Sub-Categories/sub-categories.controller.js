@@ -13,6 +13,15 @@ import { Brand, Category, Product, SubCategory } from "../../../DB/Models/index.
  */
 
 export const createSubCategory = async (req, res, next) => {
+  // check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("User not found", 404, "User not found"));
+  }
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass("User must be online", 400, "User must be online")
+    );
+  }
   // destruct categoryId from query
   const { categoryId } = req.query;
   // find the category by id in query
@@ -56,6 +65,7 @@ export const createSubCategory = async (req, res, next) => {
     },
     customId,
     categoryId: category._id,
+    createdBy: req.authUser._id,
   };
 
   // create the category in db
@@ -119,6 +129,15 @@ export const getSubCategory = async (req, res, next) => {
  * 
  */
 export const updateSubCategory = async (req, res, next) => {
+  // check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("User not found", 404, "User not found"));
+  }
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass("User must be online", 400, "User must be online")
+    );
+  }
   // destruct id from params
   const { id } = req.params;
   // check if sub-category exists
@@ -168,6 +187,15 @@ export const updateSubCategory = async (req, res, next) => {
  */
 
 export const deleteSubCategory = async (req, res, next) => {
+  // check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("User not found", 404, "User not found"));
+  }
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass("User must be online", 400, "User must be online")
+    );
+  }   
   // destruct id from params
   const { id } = req.params;
   // check if sub-category exists

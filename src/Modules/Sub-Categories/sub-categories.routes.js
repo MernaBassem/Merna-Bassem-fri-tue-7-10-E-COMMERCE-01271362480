@@ -4,7 +4,7 @@ import { Router } from "express";
 // controllers
 import * as controller from "./sub-categories.controller.js";
 // utils
-import { extensions } from "../../utils/index.js";
+import { extensions, systemRoles } from "../../utils/index.js";
 // middlewares
 import * as middlewares from "../../Middlewares/index.js";
 // models
@@ -13,7 +13,7 @@ import { createSubCategorySchema, deleteSubCategorySchema, getAllSubCategorySche
 
 
 // get the required middlewares
-const { errorHandler, getDocumentByName, multerHost, validationMiddleware } =
+const { errorHandler, getDocumentByName, multerHost, validationMiddleware ,authenticate,authorizationMiddleware} =
   middlewares;
 
 
@@ -23,6 +23,8 @@ const SubCategoryRouter = Router();
 // create subCategory
 SubCategoryRouter.post(
   "/createSubCategory",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
   validationMiddleware(createSubCategorySchema),
   getDocumentByName(SubCategory),
@@ -42,6 +44,8 @@ SubCategoryRouter.get(
 // update subCategory
 SubCategoryRouter.put(
   "/updateSubCategory/:id",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
   validationMiddleware(updateSubCategorySchema),
   getDocumentByName(SubCategory),
@@ -50,6 +54,8 @@ SubCategoryRouter.put(
 // delete subCategory
 SubCategoryRouter.delete(
   "/deleteSubCategory/:id",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   validationMiddleware(deleteSubCategorySchema),
   errorHandler(controller.deleteSubCategory)
 )

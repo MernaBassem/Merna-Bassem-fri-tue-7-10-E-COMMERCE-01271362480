@@ -4,14 +4,16 @@ import * as controller from "./brand.controller.js";
 // middlewares
 import * as Middlewares from "../../Middlewares/index.js";
 // utils
-import { extensions } from "../../utils/index.js";
+import { extensions, systemRoles } from "../../utils/index.js";
 import { createBrandSchema, deleteBrandSchema, filterBrandSchema, getAllBrandSchema, updateBrandSchema } from "./brand.schema.js";
 
 const brandRouter = Router();
-const { errorHandler, multerHost,validationMiddleware } = Middlewares;
+const { errorHandler, multerHost,validationMiddleware,authenticate,authorizationMiddleware } = Middlewares;
 // create brand
 brandRouter.post(
   "/createBrand",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
   validationMiddleware(createBrandSchema),
   errorHandler(controller.createBrand)
@@ -31,12 +33,16 @@ brandRouter.get(
 // delete Brand by id
 brandRouter.delete(
   "/deleteBrand/:id",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   validationMiddleware(deleteBrandSchema),
   errorHandler(controller.deleteBrand)
 )
 // update brand
 brandRouter.put(
   "/updateBrand/:id",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
   validationMiddleware(updateBrandSchema),
   errorHandler(controller.updateBrand)

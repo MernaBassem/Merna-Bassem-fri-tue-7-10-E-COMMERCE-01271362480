@@ -14,6 +14,14 @@ import { cloudinaryConfig, ErrorClass, uploadFile } from "../../utils/index.js";
  * @return create brand
  */
 export const createBrand = async (req, res, next) => {
+  //check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
+  // check user online
+  if (!req.authUser.status === "online") {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
   // destruct data categoryId , subCategory id from query
   const { categoryId, subCategoryId } = req.query;
   // check subCategoryId and categoryId
@@ -45,7 +53,7 @@ export const createBrand = async (req, res, next) => {
     file: req.file.path,
     folder: `${process.env.UPLOADS_FOLDER}/Categories/${isSubcategoryExist.categoryId.customId}/SubCategories/${isSubcategoryExist.customId}/Brands/${customId}`,
   });
-  
+
   // create the brand in db
   const newBrand = await Brand.create({
     name,
@@ -57,6 +65,7 @@ export const createBrand = async (req, res, next) => {
     customId,
     categoryId: isSubcategoryExist.categoryId._id,
     subCategoryId: isSubcategoryExist._id,
+    createdBy: req.authUser._id,
   });
   // send the response
   res.status(201).json({
@@ -107,6 +116,14 @@ export const filterBrand = async (req, res, next) => {
  */
 
 export const deleteBrand = async (req, res, next) => {
+  //check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
+  // check user online
+  if (!req.authUser.status==="online") {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
   // get the brand id
   const { id } = req.params;
 
@@ -144,28 +161,38 @@ export const deleteBrand = async (req, res, next) => {
  */
 
 export const updateBrand = async(req,res,next)=>{
-  // destruct id from params 
-  const {id} = req.params;
+  //check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
+  // check user online
+  if (!req.authUser.status === "online") {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
+  // destruct id from params
+  const { id } = req.params;
   // find the brand by id
-  const brand = await Brand.findById(id).populate("categoryId").populate("subCategoryId");
-  if(!brand){
+  const brand = await Brand.findById(id)
+    .populate("categoryId")
+    .populate("subCategoryId");
+  if (!brand) {
     return next(new ErrorClass("brand not found", 404, "brand not found"));
   }
   // destruct name from body
-  const {name, public_id_new} = req.body;
+  const { name, public_id_new } = req.body;
   // if name change  brand slug changed
-  if(name){
-    brand.name = name
+  if (name) {
+    brand.name = name;
     brand.slug = slugify(name, {
-    replacement: "_",
-    lower: true,
-  });
+      replacement: "_",
+      lower: true,
+    });
   }
- 
-  // image 
-  if(req.file){
+
+  // image
+  if (req.file) {
     //split the public_id
-    const splitedPublicId =public_id_new.split(`${brand.customId}/`)[1];
+    const splitedPublicId = public_id_new.split(`${brand.customId}/`)[1];
     // upload the new image
     const { secure_url } = await uploadFile({
       file: req.file.path,

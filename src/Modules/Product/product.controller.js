@@ -13,6 +13,14 @@ import slugify from "slugify";
 import { ApiFeatures } from "../../utils/api-feature.utils.js";
 
 export const addProduct = async (req, res, next) => {
+  //check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
+  // check user online
+  if (!req.authUser.status==="online") {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
   // destruct from body
   const { title, overview, specs, price, discountAmount, discountType, stock } =
     req.body;
@@ -69,6 +77,7 @@ export const addProduct = async (req, res, next) => {
     categoryId: isBrandExist.categoryId._id,
     subCategoryId: isBrandExist.subCategoryId._id,
     brandId: isBrandExist._id,
+    createdBy: req.authUser._id,
   };
   // create in db
   const newProduct = await Product.create(productObject);
@@ -87,6 +96,14 @@ export const addProduct = async (req, res, next) => {
 
 export const deleteProduct = async (req, res, next) => {
   // productId from params
+  //check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
+  // check user online
+  if (!req.authUser.status === "online") {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
   const { productId } = req.params;
   // find product
   const product = await Product.findByIdAndDelete(productId).populate(
@@ -120,6 +137,14 @@ export const deleteProduct = async (req, res, next) => {
  */
 
 export const updateProduct = async (req, res, next) => {
+  //check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
+  // check user online
+  if (!req.authUser.status === "online") {
+    return next(new ErrorClass("user not found", 404, "user not found"));
+  }
   // productId from params
   const { productId } = req.params;
   // destructuring the request body
@@ -133,7 +158,7 @@ export const updateProduct = async (req, res, next) => {
     discountType,
     specsAdd,
     specsRemove,
-    public_id_new
+    public_id_new,
   } = req.body;
 
   // find product
@@ -144,14 +169,15 @@ export const updateProduct = async (req, res, next) => {
     return next(new ErrorClass("Product not found", 404, "Product not found"));
   }
 
-  //  update the product title and slug 
-  if (title){
+  //  update the product title and slug
+  if (title) {
     product.title = title;
     product.slug = slugify(title, {
       replacement: "_",
       lower: true,
-    });  }
-    // update the product stock, overview, badge
+    });
+  }
+  // update the product stock, overview, badge
   if (stock) product.stock = stock;
   if (overview) product.overview = overview;
   if (badge) product.badge = badge;
@@ -166,25 +192,24 @@ export const updateProduct = async (req, res, next) => {
     product.appliedPrice = calculateProductPrice(newPrice, discount);
     product.price = newPrice;
     product.appliedDiscount = discount;
-  } 
-   
-    // Dynamic updates for specs
+  }
+
+  // Dynamic updates for specs
   if (specsAdd) {
     const specsToAdd = JSON.parse(specsAdd);
-    product.specs = [
-      ...new Set([...product.specs, ...specsToAdd]),
-    ];
+    product.specs = [...new Set([...product.specs, ...specsToAdd])];
   }
 
   if (specsRemove) {
     const specsToRemove = JSON.parse(specsRemove);
     product.specs = product.specs.filter(
-      (spec) => !specsToRemove.some(
-        (removeSpec) => JSON.stringify(removeSpec) === JSON.stringify(spec)
-      )
+      (spec) =>
+        !specsToRemove.some(
+          (removeSpec) => JSON.stringify(removeSpec) === JSON.stringify(spec)
+        )
     );
   }
-// Update a specific image in the Images array if a new file is provided
+  // Update a specific image in the Images array if a new file is provided
   if (req.file && public_id_new) {
     // Find the image in the array by public_id
     const imageIndex = product.Images.URLs.findIndex(
@@ -193,7 +218,9 @@ export const updateProduct = async (req, res, next) => {
 
     if (imageIndex !== -1) {
       // Split the public_id to get the customId part
-      const splitedPublicId = public_id_new.split(`${product.Images.customId}/`)[1];
+      const splitedPublicId = public_id_new.split(
+        `${product.Images.customId}/`
+      )[1];
 
       // Upload the new image
       const { secure_url } = await uploadFile({
@@ -207,14 +234,13 @@ export const updateProduct = async (req, res, next) => {
     }
   }
 
-    // save data
+  // save data
   await product.save();
 
   res.status(200).json({
     message: "Product updated successfully",
     product,
-  })
-
+  });
 }
 //--------------------------------
 /**
