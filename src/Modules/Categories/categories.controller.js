@@ -148,16 +148,6 @@ export const updateCategory = async (req, res, next) => {
       new ErrorClass("Category not found", 404, "Category not found")
     );
   }
-  // check if the category belongs to the user
-  if (category.createdBy.toString() !== req.authUser._id.toString()) {
-    return next(
-      new ErrorClass(
-        "You are not authorized to update this category",
-        404,
-        "You are not authorized to update this category"
-      )
-    );
-  }
 
   // name of the category and public_id_new
   const { name, public_id_new } = req.body;
@@ -220,16 +210,7 @@ export const deleteCategory = async (req, res, next) => {
       new ErrorClass("Category not found", 404, "Category not found")
     );
   }
-  // check if the category belongs to the user
-  if (category.createdBy.toString() !== req.authUser._id.toString()) {
-    return next(
-      new ErrorClass(
-        "You are not authorized to delete this category",
-        404,
-        "You are not authorized to delete this category"
-      )
-    );
-  }
+ 
   // delete the image from cloudinary
 
   const categoryPath = `${process.env.UPLOADS_FOLDER}/Categories/${category?.customId}`;
