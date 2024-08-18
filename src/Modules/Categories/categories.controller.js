@@ -128,6 +128,16 @@ export const getCategory = async (req, res, next) => {
  */
 
 export const updateCategory = async (req, res, next) => {
+  // check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("User not found", 404, "User not found"));
+  }
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass("User must be online", 400, "User must be online")
+    );
+  }
+
   // get the category id
   const { id } = req.params;
   // find the category by id
@@ -136,6 +146,16 @@ export const updateCategory = async (req, res, next) => {
   if (!category) {
     return next(
       new ErrorClass("Category not found", 404, "Category not found")
+    );
+  }
+  // check if the category belongs to the user
+  if (category.createdBy.toString() !== req.authUser._id.toString()) {
+    return next(
+      new ErrorClass(
+        "You are not authorized to update this category",
+        404,
+        "You are not authorized to update this category"
+      )
     );
   }
 
@@ -180,6 +200,16 @@ export const updateCategory = async (req, res, next) => {
  */
 
 export const deleteCategory = async (req, res, next) => {
+  // check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("User not found", 404, "User not found"));
+  }
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass("User must be online", 400, "User must be online")
+    );
+  }
+
   // get the category id
   const { id } = req.params;
   // find and delete  the category by id
@@ -190,7 +220,16 @@ export const deleteCategory = async (req, res, next) => {
       new ErrorClass("Category not found", 404, "Category not found")
     );
   }
-
+  // check if the category belongs to the user
+  if (category.createdBy.toString() !== req.authUser._id.toString()) {
+    return next(
+      new ErrorClass(
+        "You are not authorized to delete this category",
+        404,
+        "You are not authorized to delete this category"
+      )
+    );
+  }
   // delete the image from cloudinary
 
   const categoryPath = `${process.env.UPLOADS_FOLDER}/Categories/${category?.customId}`;

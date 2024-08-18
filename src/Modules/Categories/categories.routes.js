@@ -53,6 +53,8 @@ categoryRouter.get(
 // update category
 categoryRouter.put(
   "/updateCategory/:id",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
   validationMiddleware(updateCategorySchema),
   getDocumentByName(Category),
@@ -61,6 +63,8 @@ categoryRouter.put(
 //delete category
 categoryRouter.delete(
   "/deleteCategory/:id",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   validationMiddleware(deleteCategorySchema),
   errorHandler(controller.deleteCategory)
 );
