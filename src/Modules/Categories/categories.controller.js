@@ -10,6 +10,16 @@ import { Brand, Category, Product, SubCategory } from "../../../DB/Models/index.
  */
 
 export const createCategory = async (req, res, next) => {
+  // check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("User not found", 404, "User not found"));
+  }
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass("User must be online", 400, "User must be online")
+    );
+  }
+
   // destructuring the request body
   const { name } = req.body;
 
@@ -43,6 +53,7 @@ export const createCategory = async (req, res, next) => {
       public_id,
     },
     customId,
+    createdBy: req.authUser._id,
   });
 
   // create the category in db

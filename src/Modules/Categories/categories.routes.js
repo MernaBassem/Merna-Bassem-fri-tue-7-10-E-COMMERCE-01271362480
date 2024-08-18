@@ -11,15 +11,21 @@ import {
 } from "./categories.schema.js";
 
 // utils
-import { extensions } from "../../utils/index.js";
+import { extensions, systemRoles } from "../../utils/index.js";
 // middlewares
 import * as middlewares from "../../Middlewares/index.js";
 // models
 import { Category } from "../../../DB/Models/index.js";
 
 // get the required middlewares
-const { errorHandler, getDocumentByName, multerHost, validationMiddleware } =
-  middlewares;
+const {
+  errorHandler,
+  getDocumentByName,
+  multerHost,
+  validationMiddleware,
+  authenticate,
+  authorizationMiddleware,
+} = middlewares;
 
 const categoryRouter = Router();
 
@@ -27,6 +33,8 @@ const categoryRouter = Router();
 // create category
 categoryRouter.post(
   "/createCategory",
+  authenticate(),
+  authorizationMiddleware(systemRoles.ADMIN),
   multerHost({ allowedExtensions: extensions.Images }).single("image"),
   validationMiddleware(createCategorySchema),
   getDocumentByName(Category),
