@@ -20,6 +20,8 @@ app.use("/brands", router.brandRouter);
 app.use("/products", router.ProductRouter);
 // user routes
 app.use("/users", router.UserRouter);
+// address routes
+app.use("/address", router.AddressRouter);
 app.use(globaleResponse);
 
 
