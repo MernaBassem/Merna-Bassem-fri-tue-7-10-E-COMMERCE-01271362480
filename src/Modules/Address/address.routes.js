@@ -23,4 +23,10 @@ AddressRouter.get(
   errorHandler(authenticate()),
   errorHandler(addressController.getAllAddress)
 );
+// delete address
+AddressRouter.delete(
+  "/deleteAddress/:id",
+  errorHandler(authenticate()),
+  errorHandler(addressController.deleteAddress)
+)
 export { AddressRouter };

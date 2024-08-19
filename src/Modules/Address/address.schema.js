@@ -1,5 +1,6 @@
 // add address schema joi
 import Joi from "joi";
+import { objectIdValidation } from "../../utils/index.js";
 
 export const addAddressSchema = {
     body: Joi.object({
@@ -30,3 +31,17 @@ export const addAddressSchema = {
     }),
 
 }
+// deleted schecma 
+
+export const deleteAddressSchema = {
+  params: Joi.object({
+    id: Joi.string()
+      .custom(objectIdValidation, "Object ID Validation")
+      .required()
+      .messages({
+        "any.required": "Address ID is required",
+        "string.base": "Address ID must be a string",
+        "string.pattern": "Address ID must be a valid ObjectId",
+      }),
+  }),
+};
