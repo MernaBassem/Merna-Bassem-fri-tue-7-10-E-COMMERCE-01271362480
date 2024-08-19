@@ -89,6 +89,15 @@ export const addAddress = async (req, res, next) => {
  */
 
 export const getAllAddress = async (req, res, next) => {
+  // check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("User not found", 404, "User not found"));
+  }
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass("User must be online", 400, "User must be online")
+    );
+  }
   const address = await Address.find({ userId: req.authUser._id });
   return res.status(200).json({ address });
 };
