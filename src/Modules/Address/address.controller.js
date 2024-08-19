@@ -132,8 +132,12 @@ export const deleteAddress = async (req, res, next) => {
       )
     );
   }
-  // delete address
-  const addressDeleted = await Address.findByIdAndDelete(id);
+  // change isMarkedAsDeleted true
+  const addressDeleted = await Address.findByIdAndUpdate(
+    id,
+    { isMarkedAsDeleted: true },
+    { new: true }
+  )
   // return response
-  return res.status(200).json({ message: "Address deleted" , addressDeleted});
+  return res.status(200).json({ message: "Address deleted", addressDeleted });
 };
