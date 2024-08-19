@@ -17,5 +17,10 @@ AddressRouter.post(
     validationMiddleware(addAddressSchema),
     errorHandler(addressController.addAddress)
 );
-
+//get address
+AddressRouter.get(
+  "/getAllAddress",
+  errorHandler(authenticate()),
+  errorHandler(addressController.getAllAddress)
+);
 export { AddressRouter };

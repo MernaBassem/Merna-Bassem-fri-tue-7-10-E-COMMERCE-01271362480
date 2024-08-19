@@ -82,3 +82,13 @@ export const addAddress = async (req, res, next) => {
     });
 
 };
+//--------------------------------------------------
+/**
+ * @api {get} /address/getAllAddress Get address
+ * @returns get address
+ */
+
+export const getAllAddress = async (req, res, next) => {
+  const address = await Address.find({ userId: req.authUser._id });
+  return res.status(200).json({ address });
+};
