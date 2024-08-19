@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import * as addressController from "./address.controller.js";
 import * as middlewares from "../../Middlewares/index.js";
+import { addAddressSchema } from "./address.schema.js";
 
 
 // get the required middlewares
@@ -13,9 +14,8 @@ const AddressRouter = Router();
 AddressRouter.post(
     "/addAddress",
     errorHandler(authenticate()),
-    // errorHandler(validationMiddleware(addressController.addAddressSchema)),
+    validationMiddleware(addAddressSchema),
     errorHandler(addressController.addAddress)
 );
-
 
 export { AddressRouter };
