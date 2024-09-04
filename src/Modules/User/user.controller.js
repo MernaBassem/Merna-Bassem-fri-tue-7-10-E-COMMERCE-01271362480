@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { sendEmailService } from "../../services/send-email.service.js";
 import { ErrorClass } from "../../utils/index.js";
 import {
+  Address,
   Brand,
   Category,
   Product,
@@ -415,6 +416,8 @@ export const deleteUser = async (req, res, next) => {
   await SubCategory.deleteMany({ createdBy: req.authUser._id });
   // delete category related to user
   await Category.deleteMany({ createdBy: req.authUser._id });
+  // delete address related to user
+  await Address.deleteMany({ userId: req.authUser._id });
   // return deleted user
   return res
     .status(200)
