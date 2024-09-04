@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import * as addressController from "./address.controller.js";
 import * as middlewares from "../../Middlewares/index.js";
-import { addAddressSchema, updateAddressSchema } from "./address.schema.js";
+import { addAddressSchema, generalAddressSchema, updateAddressSchema } from "./address.schema.js";
 
 // get the required middlewares
 const { errorHandler, validationMiddleware, authenticate } = middlewares;
@@ -26,6 +26,7 @@ AddressRouter.get(
 AddressRouter.delete(
   "/deleteAddress/:id",
   errorHandler(authenticate()),
+  validationMiddleware(generalAddressSchema),
   errorHandler(addressController.deleteAddress)
 );
 // update address
@@ -35,4 +36,11 @@ AddressRouter.put(
   validationMiddleware(updateAddressSchema),
   errorHandler(addressController.updateAddress)
 );
+//get address by id 
+AddressRouter.get(
+  "/getAddressById/:id",
+  errorHandler(authenticate()),
+  validationMiddleware(generalAddressSchema),
+  errorHandler(addressController.getAddressById)
+)
 export { AddressRouter };

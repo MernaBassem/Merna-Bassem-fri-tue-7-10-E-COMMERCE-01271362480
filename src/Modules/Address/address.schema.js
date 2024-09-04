@@ -32,7 +32,7 @@ export const addAddressSchema = {
 };
 // deleted schecma 
 
-export const deleteAddressSchema = {
+export const generalAddressSchema = {
   params: Joi.object({
     id: Joi.string()
       .custom(objectIdValidation, "Object ID Validation")
@@ -54,6 +54,9 @@ export const updateAddressSchema = {
     }),
     city: Joi.string().messages({
       "string.base": "City must be a string",
+    }),
+    isDefault: Joi.boolean().messages({
+      "boolean.base": "isDefault must be a boolean",
     }),
     postalCode: Joi.string().messages({
       "string.base": "Postal Code must be a string",

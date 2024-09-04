@@ -198,3 +198,13 @@ export const updateAddress = async (req, res, next) => {
   // return response
   return res.status(200).json({ message: "Address updated", addressUpdated });
 }
+//----------------------------------
+// get address by id
+export const getAddressById = async (req, res, next) => {
+  const { id } = req.params;
+  const address = await Address.findById(id);
+  if (!address) {
+    return next(new ErrorClass("Address not found", 404, "Address not found"));
+  }
+  return res.status(200).json({ address });
+}
