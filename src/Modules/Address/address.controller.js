@@ -141,3 +141,60 @@ export const deleteAddress = async (req, res, next) => {
   // return response
   return res.status(200).json({ message: "Address deleted", addressDeleted });
 };
+
+//----------------------
+/**
+ * @api {put} /address/updateAddress/:id Update address
+ * @returns update address
+ */
+// update address
+export const updateAddress = async (req, res, next) => {
+  // check user online
+  if (!req.authUser) {
+    return next(new ErrorClass("User not found", 404, "User not found"));
+  }
+  if (req.authUser.status !== "online") {
+    return next(
+      new ErrorClass("User must be online", 400, "User must be online")
+    );
+  }
+
+  const { id } = req.params;
+  const { country, city, postalCode, buildingNumber, floorNumber, addressLabel, isDefault} = req.body;
+
+  const address = await Address.findById(id);
+
+  if (!address) {
+    return next(new ErrorClass("Address not found", 404, "Address not found"));
+  }
+
+  if (address.userId.toString() !== req.authUser._id.toString()) {
+    return next(
+      new ErrorClass(
+        "No one other than the owner of the address is allowed to update it.",
+        404,
+        "No one other than the owner of the address is allowed to update it.",
+        "update Address"
+      )
+    );
+  }
+
+  // if send isDefault true change all default address to false put no this address false 
+  if (isDefault) {
+    await Address.updateMany(
+      { userId: req.authUser._id },
+      { isDefault: false }
+    );
+  }
+  // use save 
+  if (country) address.country = country;
+  if (city) address.city = city;
+  if (postalCode) address.postalCode = postalCode;
+  if (buildingNumber) address.buildingNumber = buildingNumber;
+  if (floorNumber) address.floorNumber = floorNumber;
+  if (addressLabel) address.addressLabel = addressLabel;
+  if (isDefault) address.isDefault = isDefault;
+  const addressUpdated = await address.save();
+  // return response
+  return res.status(200).json({ message: "Address updated", addressUpdated });
+}
