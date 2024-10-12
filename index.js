@@ -22,7 +22,10 @@ app.use("/products", router.ProductRouter);
 app.use("/users", router.UserRouter);
 // address routes
 app.use("/address", router.AddressRouter);
+//cart routes
+app.use("/cart", router.CartRouter);
 app.use(globaleResponse);
+
 
 
 connection_db();
