@@ -69,7 +69,7 @@ export const signUp = async (req, res, next) => {
   const token = jwt.sign(
     { _id: userInstance._id },
     process.env.CONFIRMATION_SECRET,
-    { expiresIn: "10m" }
+    { expiresIn: "2d" }
   );
 
   // confirmation Link
@@ -134,7 +134,7 @@ export const confirmEmail = async (req, res, next) => {
         const newToken = jwt.sign(
           { _id: user._id },
           process.env.CONFIRMATION_SECRET,
-          { expiresIn: "10m" }
+          { expiresIn: "2d" }
         );
         // New confirmation Link
         const newConfirmationLink = `${req.protocol}://${req.headers.host}/users/confirm-email/${newToken}`;
@@ -232,7 +232,7 @@ export const signIn = async (req, res, next) => {
 
   // Sign a JWT token with user's ID and a secret key (make sure to use a strong secret)
   const token = jwt.sign({ userId: user._id }, process.env.LOGIN_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "2d",
   }); // Token expires in 1 hour
 
   // Update status from online
@@ -331,7 +331,7 @@ export const updateAccount = async (req, res, next) => {
     const token = jwt.sign(
       { _id: userInstance._id },
       process.env.CONFIRMATION_SECRET,
-      { expiresIn: "10m" }
+      { expiresIn: "2d" }
     );
 
     // Create confirmation link
@@ -430,8 +430,8 @@ export const deleteUser = async (req, res, next) => {
  * @api {patch} /users/updatePassword
  * @body {string} oldPassword newPassword
  * @return updated password
- * 
-*/
+ *
+ */
 export const updatePassword = async (req, res, next) => {
   // check status online
   if (req.authUser.status !== "online") {
@@ -497,7 +497,7 @@ export const updatePassword = async (req, res, next) => {
  * @api {post} /users/forgetPassword
  * @body {string} email
  * @return otp
- * 
+ *
  */
 
 export const forgetPassword = async (req, res, next) => {
@@ -569,8 +569,8 @@ export const forgetPassword = async (req, res, next) => {
  * @api {post} /users/resetPassword
  * @body {string} email otp newPassword
  * @return reset password
- * 
-*/
+ *
+ */
 
 export const resetPassword = async (req, res, next) => {
   // destruct email, otp and newPassword from body
@@ -640,15 +640,12 @@ export const resetPassword = async (req, res, next) => {
   });
 };
 
-
 //-----------------------------------------------------
 // Get user account data
 /**
  * @api {get} /user/getAccountData get user account data
  * @return get user account data
  */
-
-
 
 export const getAccountData = async (req, res, next) => {
   // check status online

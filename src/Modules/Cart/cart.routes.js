@@ -25,5 +25,10 @@ CartRouter.put(
   errorHandler(controller.removeFromCart)
 
 );
-
+// update cart 
+CartRouter.put(
+  "/updateCart/:productId",
+  authenticate(),
+  errorHandler(controller.updateCart)
+)
 export { CartRouter }
