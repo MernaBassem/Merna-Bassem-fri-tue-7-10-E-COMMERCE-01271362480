@@ -3,7 +3,7 @@ import { Router } from "express";
 import * as controller from "./cart.controller.js";
 //middlewares
 import * as middlewares from "../../Middlewares/index.js";
-import { AddCartSchema } from "./cart.schema.js";
+import { AddCartSchema, RemoveFromCartSchema } from "./cart.schema.js";
 
 const CartRouter = Router()
 const { errorHandler, validationMiddleware, authenticate } = middlewares;
@@ -21,6 +21,7 @@ CartRouter.post(
 CartRouter.put(
   "/removeFromCart/:productId",
   authenticate(),
+  validationMiddleware(RemoveFromCartSchema),
   errorHandler(controller.removeFromCart)
 
 );
