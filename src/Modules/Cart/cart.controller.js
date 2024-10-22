@@ -2,8 +2,9 @@ import { Product , Cart } from "../../../DB/Models/index.js";
 import { ErrorClass } from "../../utils/index.js";
 
 /**
- * @api {pos} cart/addToCart Add To Cart
+ * @api {post} cart/addToCart/productID Add To Cart
  * @body  quantity from body
+ * @params productId
  * @query userId from token authentication req.authUser._id and productId from query
  * @returns add to cart
  */
@@ -11,7 +12,6 @@ import { ErrorClass } from "../../utils/index.js";
 export const addToCart = async (req, res, next) => {
   // destruct productId from params
   const { productId } = req.params;
-  console.log(productId);
   
   // destruct quantity from body
   const { quantity } = req.body;
@@ -55,7 +55,6 @@ export const addToCart = async (req, res, next) => {
   const isProductExist = cart.products.find(
     (pro) => pro.productId == productId
   );
-  console.log(isProductExist);
   if (isProductExist) {
     return next(new ErrorClass("Product already in cart", 400, "Product already in cart"));
   }
@@ -69,3 +68,32 @@ export const addToCart = async (req, res, next) => {
     cart
   });
 };
+
+//--------------------
+/**
+ * @api {put} cart/removeFromCart/productId Add To Cart
+ * @params productId
+ * @query userId from token authentication req.authUser._id and productId from query
+ * @returns remove to cart
+ **/
+
+export const removeFromCart = async (req,res,next)=>{
+  const userId = req?.authUser._id
+  const {productId} =  req.params
+  const cart = await Cart.findOne({userId,"products.productId":productId})
+  if(!cart){
+    return next(new ErrorClass("Product not in cart",404,"Product not in cart"))
+  }
+  cart.products = cart.products.filter(pro => pro.productId != productId)
+  if (cart.products.length === 0){
+    await Cart.deleteOne({userId})
+    return res.status(200).json({message:"Product removed from cart"})
+    
+  }
+  cart.subTotal = 0
+  cart.products.forEach(pro =>{
+    cart.subTotal += pro.price * pro.quantity
+  })
+  await cart.save()
+  res.status(200).json({message:"Product removed from cart",cart})
+}

@@ -17,5 +17,12 @@ CartRouter.post(
   validationMiddleware(AddCartSchema),
   errorHandler(controller.addToCart)
 );
+// remove from cart
+CartRouter.put(
+  "/removeFromCart/:productId",
+  authenticate(),
+  errorHandler(controller.removeFromCart)
+
+);
 
 export { CartRouter }
